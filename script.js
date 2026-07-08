@@ -1142,30 +1142,32 @@ function horizontalScrollerFor(element) {
 }
 
 function lockHorizontalScrollPositions(positions, duration = 900) {
+  const cappedDuration = Math.min(duration, 140);
   const start = performance.now();
   function tick(now) {
     restoreHorizontalScrollPositions(positions);
-    if (now - start < duration) requestAnimationFrame(tick);
+    if (now - start < cappedDuration) requestAnimationFrame(tick);
   }
   restoreHorizontalScrollPositions(positions);
   requestAnimationFrame(tick);
   setTimeout(() => restoreHorizontalScrollPositions(positions), 0);
-  setTimeout(() => restoreHorizontalScrollPositions(positions), duration + 80);
+  setTimeout(() => restoreHorizontalScrollPositions(positions), cappedDuration + 60);
 }
 
 function holdScrollerPosition(scroller, left, duration = 260) {
   if (!scroller) return;
+  const cappedDuration = Math.min(duration, 120);
   const start = performance.now();
   function tick(now) {
     scroller.scrollLeft = left;
-    if (now - start < duration) {
+    if (now - start < cappedDuration) {
       requestAnimationFrame(tick);
     }
   }
   scroller.scrollLeft = left;
   requestAnimationFrame(tick);
   setTimeout(() => { scroller.scrollLeft = left; }, 0);
-  setTimeout(() => { scroller.scrollLeft = left; }, duration + 40);
+  setTimeout(() => { scroller.scrollLeft = left; }, cappedDuration + 50);
 }
 
 function updateStepText(completion) {
@@ -1248,12 +1250,9 @@ baseButtons.forEach((button) => {
 
     button.blur();
     updateProgress();
-    restoreHorizontalScrollPositions(preservedScrollPositions);
-    holdScrollerPosition(baseOptionsScroller, baseScrollLeft, 900);
-    requestAnimationFrame(() => {
-      restoreHorizontalScrollPositions(preservedScrollPositions);
-      holdScrollerPosition(baseOptionsScroller, baseScrollLeft, 900);
-    });
+    if (baseOptionsScroller) preservedScrollPositions.push([baseOptionsScroller, baseScrollLeft]);
+    lockHorizontalScrollPositions(preservedScrollPositions, 120);
+    requestAnimationFrame(refreshPinwheels);
     button.blur();
   });
 });
@@ -1282,22 +1281,25 @@ function applyPinwheel(scroller, selector) {
   const items = [...scroller.querySelectorAll(selector)];
   if (!items.length) return;
 
-  const center = scroller.getBoundingClientRect().left + scroller.clientWidth / 2;
+  const center = scroller.scrollLeft + scroller.clientWidth / 2;
   const isSmallScreen = window.matchMedia("(max-width: 720px)").matches;
 
   items.forEach((item) => {
-    const rect = item.getBoundingClientRect();
-    const itemCenter = rect.left + rect.width / 2;
+    const itemCenter = item.offsetLeft + item.offsetWidth / 2;
     const distance = (itemCenter - center) / Math.max(scroller.clientWidth / 2, 1);
     const clamped = Math.max(-1, Math.min(1, distance));
     const closeness = 1 - Math.abs(clamped);
 
-    const scale = 1;
-    const lift = isSmallScreen ? 0 : Math.abs(clamped) * 8;
-    const rotate = isSmallScreen ? 0 : clamped * -6;
-    const opacity = isSmallScreen ? 0.78 + closeness * 0.22 : 0.72 + closeness * 0.28;
+    const scale = isSmallScreen
+      ? Number((0.975 + closeness * 0.035).toFixed(3))
+      : Number((0.955 + closeness * 0.065).toFixed(3));
+    const lift = isSmallScreen ? 0 : Number((Math.abs(clamped) * 6).toFixed(2));
+    const rotate = isSmallScreen ? 0 : Number((clamped * -4).toFixed(2));
+    const opacity = isSmallScreen
+      ? Number((0.86 + closeness * 0.14).toFixed(3))
+      : Number((0.78 + closeness * 0.22).toFixed(3));
 
-    item.style.transform = `perspective(900px) rotateY(${rotate}deg) translateY(${lift}px) scale(${scale})`;
+    item.style.transform = `perspective(900px) rotateY(${rotate}deg) translate3d(0, ${lift}px, 0) scale(${scale})`;
     item.style.opacity = `${opacity}`;
   });
 }
@@ -1308,23 +1310,29 @@ function refreshPinwheels() {
   applyPinwheel(specificQuestions, "label");
 }
 
+let pinwheelFrame = null;
+function scheduleRefreshPinwheels() {
+  if (pinwheelFrame) return;
+  pinwheelFrame = requestAnimationFrame(() => {
+    pinwheelFrame = null;
+    refreshPinwheels();
+  });
+}
+
 const horizontalScrollers = [baseOptionsScroller, document.querySelector("#logisticsLayer .field-grid"), specificQuestions].filter(Boolean);
 horizontalScrollers.forEach((scroller) => {
-  scroller.addEventListener("scroll", () => requestAnimationFrame(refreshPinwheels));
+  scroller.addEventListener("scroll", scheduleRefreshPinwheels);
   scroller.addEventListener("wheel", (event) => {
     if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
     event.preventDefault();
-    scroller.scrollBy({
-      left: event.deltaY,
-      behavior: "smooth"
-    });
+    scroller.scrollLeft += event.deltaY;
   }, { passive: false });
 });
 
 
 
 document.querySelectorAll("#eventBuilder select").forEach(enhanceChoiceSelect);
-window.addEventListener("resize", () => requestAnimationFrame(refreshPinwheels));
+window.addEventListener("resize", scheduleRefreshPinwheels);
 
 eventTypeField.addEventListener("change", () => {
   state.eventType = eventTypeField.value;

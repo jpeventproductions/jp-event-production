@@ -2893,3 +2893,12 @@ textarea {
     margin: 8px 2px 0 !important;
   }
 }
+
+/* v47: stable scroll-linked zoom for horizontal quote choosers. */
+.option-card,
+#logisticsLayer .field-grid label,
+#specificQuestions label {
+  backface-visibility: hidden;
+  transform-origin: center center;
+  transition: opacity 120ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease !important;
+}

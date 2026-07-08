@@ -1,0 +1,1 @@
+v47: Added back a subtle zoom effect while horizontally scrolling the Build Your Quote chooser. The transform math now uses stable layout positions instead of transformed measurements, scroll updates are coalesced, and long post-selection scroll locks were shortened to reduce jitter after a choice is selected.
