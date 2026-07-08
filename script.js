@@ -1081,51 +1081,6 @@ function refreshPinwheels() {
 });
 
 
-const layerScene = document.querySelector(".apple-scroll");
-const layerCards = [...document.querySelectorAll(".apple-scroll .scroll-card")];
-let layerFadeRaf = null;
-
-function clamp(value, min = 0, max = 1) {
-  return Math.max(min, Math.min(max, value));
-}
-
-function fadeBetween(progress, start, end) {
-  if (end === start) return progress >= end ? 1 : 0;
-  return clamp((progress - start) / (end - start));
-}
-
-function setLayerCardVisual(card, opacity) {
-  card.style.opacity = opacity.toFixed(3);
-  const scale = 0.992 + opacity * 0.008;
-  card.style.transform = `translate(-50%, -50%) scale(${scale})`;
-  card.classList.toggle("is-fade-active", opacity > 0.55);
-}
-
-function updateLayerFades() {
-  layerFadeRaf = null;
-  if (!layerScene || !layerCards.length) return;
-
-  const rect = layerScene.getBoundingClientRect();
-  const scrollable = Math.max(rect.height - window.innerHeight, 1);
-  const progress = clamp(-rect.top / scrollable);
-
-  const opacities = [
-    1 - fadeBetween(progress, 0.24, 0.38),
-    Math.min(fadeBetween(progress, 0.28, 0.42), 1 - fadeBetween(progress, 0.56, 0.70)),
-    fadeBetween(progress, 0.60, 0.74)
-  ];
-
-  layerCards.forEach((card, index) => setLayerCardVisual(card, opacities[index] ?? 0));
-}
-
-function requestLayerFadeUpdate() {
-  if (layerFadeRaf) return;
-  layerFadeRaf = window.requestAnimationFrame(updateLayerFades);
-}
-
-window.addEventListener("scroll", requestLayerFadeUpdate, { passive: true });
-window.addEventListener("resize", requestLayerFadeUpdate);
-requestLayerFadeUpdate();
 
 const scrollHintState = new WeakMap();
 

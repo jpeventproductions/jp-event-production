@@ -49,3 +49,6 @@ The form currently saves requests to browser localStorage for demo purposes. The
 
 
 V26 updates: pinned fade layers with shorter scroll distance, removed image-edge shimmer, portfolio jumps directly to In the Room, pulsing Meet the Founder button, expanded founder bio, and Sign In removed from top nav.
+
+
+v30 update: removed the Layer 1 / Layer 2 / Layer 3 intro card section so the page moves from the hero directly into Build Your Own Event.
