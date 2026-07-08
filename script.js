@@ -1080,6 +1080,54 @@ function refreshPinwheels() {
   }, { passive: false });
 });
 
+
+const layerScene = document.querySelector(".apple-scroll");
+const layerCards = [...document.querySelectorAll(".apple-scroll .scroll-card")];
+let layerFadeRaf = null;
+
+function clamp(value, min = 0, max = 1) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function fadeBetween(progress, start, end) {
+  if (end === start) return progress >= end ? 1 : 0;
+  return clamp((progress - start) / (end - start));
+}
+
+function setLayerCardVisual(card, opacity) {
+  card.style.opacity = opacity.toFixed(3);
+  const lift = (1 - opacity) * 18;
+  const scale = 0.985 + opacity * 0.015;
+  card.style.transform = `translateY(${lift}px) scale(${scale})`;
+  card.classList.toggle("is-fade-active", opacity > 0.55);
+}
+
+function updateLayerFades() {
+  layerFadeRaf = null;
+  if (!layerScene || !layerCards.length) return;
+
+  const rect = layerScene.getBoundingClientRect();
+  const scrollable = Math.max(rect.height - window.innerHeight, 1);
+  const progress = clamp(-rect.top / scrollable);
+
+  const opacities = [
+    1 - fadeBetween(progress, 0.20, 0.36),
+    Math.min(fadeBetween(progress, 0.24, 0.40), 1 - fadeBetween(progress, 0.58, 0.74)),
+    fadeBetween(progress, 0.64, 0.80)
+  ];
+
+  layerCards.forEach((card, index) => setLayerCardVisual(card, opacities[index] ?? 0));
+}
+
+function requestLayerFadeUpdate() {
+  if (layerFadeRaf) return;
+  layerFadeRaf = window.requestAnimationFrame(updateLayerFades);
+}
+
+window.addEventListener("scroll", requestLayerFadeUpdate, { passive: true });
+window.addEventListener("resize", requestLayerFadeUpdate);
+requestLayerFadeUpdate();
+
 const scrollHintState = new WeakMap();
 
 function hasHorizontalOverflow(scroller) {
@@ -1092,7 +1140,7 @@ function previewHorizontalScroll(scroller, key = "default") {
   scrollHintState.set(scroller, key);
 
   const startLeft = scroller.scrollLeft;
-  const maxShift = Math.min(84, Math.max(42, scroller.clientWidth * 0.16));
+  const maxShift = Math.min(68, Math.max(36, scroller.clientWidth * 0.14));
   const targetLeft = Math.min(scroller.scrollWidth - scroller.clientWidth, startLeft + maxShift);
   if (targetLeft <= startLeft + 4) return;
 
