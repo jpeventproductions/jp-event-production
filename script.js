@@ -1096,8 +1096,8 @@ function fadeBetween(progress, start, end) {
 
 function setLayerCardVisual(card, opacity) {
   card.style.opacity = opacity.toFixed(3);
-  const lift = (1 - opacity) * 18;
-  const scale = 0.985 + opacity * 0.015;
+  const lift = (1 - opacity) * 10;
+  const scale = 0.992 + opacity * 0.008;
   card.style.transform = `translateY(${lift}px) scale(${scale})`;
   card.classList.toggle("is-fade-active", opacity > 0.55);
 }
@@ -1111,9 +1111,9 @@ function updateLayerFades() {
   const progress = clamp(-rect.top / scrollable);
 
   const opacities = [
-    1 - fadeBetween(progress, 0.16, 0.30),
-    Math.min(fadeBetween(progress, 0.18, 0.32), 1 - fadeBetween(progress, 0.52, 0.66)),
-    fadeBetween(progress, 0.54, 0.68)
+    1 - fadeBetween(progress, 0.20, 0.34),
+    Math.min(fadeBetween(progress, 0.24, 0.38), 1 - fadeBetween(progress, 0.58, 0.72)),
+    fadeBetween(progress, 0.62, 0.78)
   ];
 
   layerCards.forEach((card, index) => setLayerCardVisual(card, opacities[index] ?? 0));
