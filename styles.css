@@ -2626,3 +2626,163 @@ textarea {
     width: 22px;
   }
 }
+
+
+/* v43: transparent pricing guide as individual expandable pills. */
+.pricing-pill-guide {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+  width: 100%;
+}
+
+.pricing-pill-header {
+  align-items: center;
+  color: #6d520a;
+  display: grid;
+  font-size: 0.74rem;
+  font-weight: 950;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 0.72fr);
+  letter-spacing: 0.12em;
+  padding: 0 18px;
+  text-transform: uppercase;
+}
+
+.pricing-pill {
+  background: #fffaf0;
+  border: 1px solid #eadbb6;
+  border-radius: 999px;
+  overflow: hidden;
+  transition: border-radius 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.pricing-pill[open] {
+  border-color: rgba(198, 155, 54, 0.58);
+  border-radius: 24px;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.055);
+}
+
+.pricing-pill summary {
+  align-items: center;
+  cursor: pointer;
+  display: grid !important;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 0.72fr);
+  list-style: none;
+  padding: 14px 16px 14px 18px;
+}
+
+.pricing-pill summary::-webkit-details-marker {
+  display: none;
+}
+
+.pricing-pill summary::after,
+.pricing-pill[open] summary::after {
+  content: "" !important;
+  display: none !important;
+}
+
+.pricing-pill-item {
+  color: #24221f;
+  font-size: 0.96rem;
+  font-weight: 950;
+  line-height: 1.22;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.pricing-pill-price-wrap {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) 30px;
+  min-width: 0;
+}
+
+.pricing-pill-price {
+  color: #24221f;
+  font-size: 0.92rem;
+  font-weight: 900;
+  line-height: 1.22;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+
+.pricing-pill-plus {
+  align-items: center;
+  background: #f7f1e4;
+  border: 1px solid #eadbb6;
+  border-radius: 999px;
+  color: #6d520a;
+  display: inline-flex;
+  font-size: 1.1rem;
+  height: 30px;
+  justify-content: center;
+  line-height: 1;
+  width: 30px;
+}
+
+.pricing-pill[open] .pricing-pill-plus {
+  font-size: 0;
+}
+
+.pricing-pill[open] .pricing-pill-plus::before {
+  content: "–";
+  font-size: 1.1rem;
+}
+
+.pricing-pill p {
+  border-top: 1px solid #eadbb6;
+  color: var(--muted) !important;
+  font-size: 0.92rem;
+  font-weight: 500 !important;
+  line-height: 1.52;
+  margin: 0 18px 16px !important;
+  padding-top: 12px;
+}
+
+@media (max-width: 720px) {
+  .pricing-pill-guide {
+    gap: 12px;
+  }
+
+  .pricing-pill-header {
+    display: none;
+  }
+
+  .pricing-pill {
+    border-radius: 24px;
+  }
+
+  .pricing-pill summary {
+    align-items: stretch;
+    gap: 8px;
+    grid-template-columns: 1fr;
+    padding: 14px;
+  }
+
+  .pricing-pill-item {
+    font-size: 1rem;
+  }
+
+  .pricing-pill-price-wrap {
+    align-items: center;
+    background: rgba(247, 241, 228, 0.72);
+    border: 1px solid #eadbb6;
+    border-radius: 999px;
+    grid-template-columns: minmax(0, 1fr) 32px;
+    margin-top: 2px;
+    padding: 8px 9px 8px 12px;
+  }
+
+  .pricing-pill-price {
+    font-size: 0.9rem;
+  }
+
+  .pricing-pill p {
+    font-size: 0.9rem;
+    margin: 0 14px 14px !important;
+  }
+}
