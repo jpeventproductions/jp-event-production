@@ -532,7 +532,7 @@ function pulseElement(element) {
   if (!element) return;
 
   // Mobile horizontal cards were shaking because the tap pulse animation
-  // fought against the scroll-wheel zoom transform. Keep the selection
+  // fought against the scroll-wheel transform. Keep the selection
   // instant on small screens and let the selected color carry the feedback.
   const isSmallScreen = window.matchMedia("(max-width: 720px)").matches;
   element.classList.remove("field-pulse", "just-selected");
@@ -748,7 +748,7 @@ const PRICING = {
   djExtraHourlyAfterFour: 100,
   djMinimumHours: 3,
   backline: 250,
-  liveBandCoverage: 100,
+  liveBandCoverage: 250,
   lighting: 250,
   playback: 75,
   technicianDayRate: 200,
@@ -940,7 +940,7 @@ function calculateTemporaryQuote() {
 
   if (liveBandCoverageSelected) {
     subtotal += PRICING.liveBandCoverage;
-    items.push("Live band coverage + cables/mics add-on: $100 flat");
+    items.push("Live band coverage + cables/mics add-on: $250 flat");
 
     if (!state.baseOptions.has("DJ setup") && type !== "Wedding" && !state.baseOptions.has("Technician")) {
       subtotal += PRICING.technicianDayRate;
@@ -1292,7 +1292,7 @@ function applyPinwheel(scroller, selector) {
     const clamped = Math.max(-1, Math.min(1, distance));
     const closeness = 1 - Math.abs(clamped);
 
-    const scale = isSmallScreen ? 0.92 + closeness * 0.14 : 0.88 + closeness * 0.20;
+    const scale = 1;
     const lift = isSmallScreen ? 0 : Math.abs(clamped) * 8;
     const rotate = isSmallScreen ? 0 : clamped * -6;
     const opacity = isSmallScreen ? 0.78 + closeness * 0.22 : 0.72 + closeness * 0.28;
