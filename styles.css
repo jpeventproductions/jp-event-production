@@ -1740,23 +1740,23 @@ textarea {
 }
 
 
-/* v28 pinned layer-flow correction: the page holds in one visible window while Layer 1, 2, and 3 fade through. */
+/* v29 repair: stable pinned Layer 1/2/3 fade flow with no long blank release gap. */
 .apple-scroll {
   background: var(--deep);
   color: var(--white);
-  display: block;
-  min-height: 315svh;
-  overflow: visible;
-  padding: 0;
-  position: relative;
+  display: block !important;
+  min-height: 238svh !important;
+  overflow: visible !important;
+  padding: 0 !important;
+  position: relative !important;
 }
 
 .layer-pin {
   display: grid;
   height: calc(100svh - var(--header-offset));
-  min-height: min(760px, calc(100svh - var(--header-offset)));
+  min-height: calc(100svh - var(--header-offset));
   overflow: hidden;
-  padding: clamp(14px, 2vw, 28px) 6vw;
+  padding: 8px 6vw;
   place-items: center;
   position: sticky;
   top: var(--header-offset);
@@ -1768,21 +1768,26 @@ textarea {
   display: grid;
   gap: clamp(18px, 3vw, 44px);
   grid-template-columns: minmax(0, 0.98fr) minmax(280px, 0.72fr);
-  height: min(68svh, 610px);
+  height: min(64svh, 600px) !important;
   left: 50%;
-  margin: 0;
-  max-height: calc(100svh - var(--header-offset) - 46px);
-  min-height: 0;
+  margin: 0 !important;
+  max-height: calc(100svh - var(--header-offset) - 22px) !important;
+  min-height: 0 !important;
   opacity: 0;
   overflow: hidden;
-  padding: clamp(24px, 3.7vw, 54px);
+  padding: clamp(24px, 3.7vw, 54px) !important;
   pointer-events: none;
-  position: absolute;
+  position: absolute !important;
   top: 50%;
   transform: translate(-50%, -50%) scale(0.992);
-  transition: opacity 170ms linear, transform 170ms linear;
-  width: min(1180px, calc(100vw - 12vw));
+  transition: opacity 160ms linear, transform 160ms linear;
+  width: min(1180px, calc(100vw - 12vw)) !important;
   will-change: opacity, transform;
+}
+
+.layer-pin .scroll-card:first-child {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .layer-pin .scroll-card.is-fade-active {
@@ -1796,23 +1801,23 @@ textarea {
 
 .layer-pin .service-visual {
   align-self: center;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 10;
   border: 0;
   border-radius: 28px;
   box-shadow: 0 16px 38px rgba(0, 0, 0, 0.24);
   height: auto;
-  max-height: min(38svh, 390px);
+  max-height: min(34svh, 340px);
   min-height: 0;
   width: 100%;
-  -webkit-mask-image: none;
-  mask-image: none;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
 }
 
 .layer-pin .service-visual::before {
-  display: none;
+  display: none !important;
 }
 
-/* No portal/customer account area until the backend dashboard is ready. */
+/* No portal/customer account section until the backend dashboard is connected. */
 .signin,
 #signin {
   display: none !important;
@@ -1820,53 +1825,44 @@ textarea {
 
 @media (max-width: 1020px) {
   .apple-scroll {
-    min-height: 318svh;
+    min-height: 242svh !important;
   }
 
   .layer-pin {
-    padding: 12px 5vw;
+    padding: 8px 5vw;
   }
 
   .layer-pin .scroll-card {
     grid-template-columns: 1fr;
-    grid-template-rows: auto minmax(0, 0.74fr);
-    height: min(76svh, 680px);
-    max-height: calc(100svh - var(--header-offset) - 32px);
-    padding: clamp(20px, 4vw, 34px);
-    position: absolute;
-    top: 50%;
-    width: min(760px, calc(100vw - 10vw));
+    grid-template-rows: auto minmax(0, 0.72fr);
+    height: min(74svh, 650px) !important;
+    max-height: calc(100svh - var(--header-offset) - 20px) !important;
+    padding: clamp(20px, 4vw, 34px) !important;
+    width: min(760px, calc(100vw - 10vw)) !important;
   }
 
   .layer-pin .service-visual {
     aspect-ratio: 16 / 9;
-    max-height: min(28svh, 250px);
+    max-height: min(27svh, 250px);
   }
 }
 
 @media (max-width: 720px) {
   .apple-scroll {
-    min-height: 320svh;
+    min-height: 246svh !important;
   }
 
   .layer-pin {
-    height: calc(100svh - var(--header-offset));
-    min-height: calc(100svh - var(--header-offset));
-    padding: 10px 4vw;
-    position: sticky;
-    top: var(--header-offset);
+    padding: 6px 4vw;
   }
 
   .layer-pin .scroll-card {
     border-radius: 28px;
-    grid-template-rows: auto minmax(0, 0.66fr);
-    height: min(78svh, 650px);
-    max-height: calc(100svh - var(--header-offset) - 24px);
-    min-height: 0;
-    padding: clamp(18px, 5vw, 26px);
-    position: absolute;
-    top: 50%;
-    width: calc(100vw - 28px);
+    grid-template-rows: auto minmax(0, 0.64fr);
+    height: min(78svh, 640px) !important;
+    max-height: calc(100svh - var(--header-offset) - 16px) !important;
+    padding: clamp(18px, 5vw, 26px) !important;
+    width: calc(100vw - 28px) !important;
   }
 
   .layer-pin .scroll-card h2 {
@@ -1879,6 +1875,6 @@ textarea {
   }
 
   .layer-pin .service-visual {
-    max-height: min(27svh, 220px);
+    max-height: min(24svh, 210px);
   }
 }

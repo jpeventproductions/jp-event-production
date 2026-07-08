@@ -1111,8 +1111,8 @@ function updateLayerFades() {
 
   const opacities = [
     1 - fadeBetween(progress, 0.24, 0.38),
-    Math.min(fadeBetween(progress, 0.27, 0.42), 1 - fadeBetween(progress, 0.58, 0.72)),
-    fadeBetween(progress, 0.62, 0.78)
+    Math.min(fadeBetween(progress, 0.28, 0.42), 1 - fadeBetween(progress, 0.56, 0.70)),
+    fadeBetween(progress, 0.60, 0.74)
   ];
 
   layerCards.forEach((card, index) => setLayerCardVisual(card, opacities[index] ?? 0));
@@ -1184,6 +1184,13 @@ document.getElementById("saveDetails").addEventListener("click", () => {
   updateProgress();
 });
 
+const signinPreview = document.getElementById("signinPreview");
+if (signinPreview) {
+  signinPreview.addEventListener("click", () => {
+    signinPreview.textContent = "Customer accounts coming soon";
+    signinPreview.setAttribute("aria-live", "polite");
+  });
+}
 
 document.getElementById("openFounder").addEventListener("click", () => {
   if (typeof founderDialog.showModal === "function") {
