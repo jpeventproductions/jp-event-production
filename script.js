@@ -1096,9 +1096,8 @@ function fadeBetween(progress, start, end) {
 
 function setLayerCardVisual(card, opacity) {
   card.style.opacity = opacity.toFixed(3);
-  const lift = (1 - opacity) * 10;
   const scale = 0.992 + opacity * 0.008;
-  card.style.transform = `translateY(${lift}px) scale(${scale})`;
+  card.style.transform = `translate(-50%, -50%) scale(${scale})`;
   card.classList.toggle("is-fade-active", opacity > 0.55);
 }
 
@@ -1111,8 +1110,8 @@ function updateLayerFades() {
   const progress = clamp(-rect.top / scrollable);
 
   const opacities = [
-    1 - fadeBetween(progress, 0.20, 0.34),
-    Math.min(fadeBetween(progress, 0.24, 0.38), 1 - fadeBetween(progress, 0.58, 0.72)),
+    1 - fadeBetween(progress, 0.24, 0.38),
+    Math.min(fadeBetween(progress, 0.27, 0.42), 1 - fadeBetween(progress, 0.58, 0.72)),
     fadeBetween(progress, 0.62, 0.78)
   ];
 
@@ -1185,13 +1184,6 @@ document.getElementById("saveDetails").addEventListener("click", () => {
   updateProgress();
 });
 
-const signinPreview = document.getElementById("signinPreview");
-if (signinPreview) {
-  signinPreview.addEventListener("click", () => {
-    signinPreview.textContent = "Customer accounts coming soon";
-    signinPreview.setAttribute("aria-live", "polite");
-  });
-}
 
 document.getElementById("openFounder").addEventListener("click", () => {
   if (typeof founderDialog.showModal === "function") {
