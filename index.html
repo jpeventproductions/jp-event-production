@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JP Event Production | Build Your Own Event</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="JP Event Production home">
+      <img class="brand-logo-mark" src="assets/logo/jp-note-logo.png" alt="" aria-hidden="true">
+      <span>
+        <strong>JP Event Production</strong>
+        <small>Live Sound Audio, DJ and Backline</small>
+      </span>
+    </a>
+    <nav aria-label="Main navigation">
+      <a href="#builder">Build</a>
+      <a href="#portfolio">Portfolio</a>
+      <a href="#signin">Sign In</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-bg hero-bg-one"></div>
+      <div class="hero-bg hero-bg-two"></div>
+      <div class="hero-bg hero-bg-three"></div>
+      <div class="hero-shade"></div>
+      <div class="hero-content">
+        <p class="eyebrow">Nashville and Middle Tennessee</p>
+        <h1 id="hero-title">Professional sound for midsize events.</h1>
+        <p>Audio, DJ support, wireless microphones, lighting, and backline coordination for weddings, private events, conferences, showcases, churches, schools, and community rooms up to 150-200 people.</p>
+        <a class="hero-cta" href="#builder">Build Your Setup</a>
+      </div>
+    </section>
+
+    <section class="apple-scroll" aria-label="Production approach">
+      <article class="scroll-card">
+        <div class="scroll-copy">
+          <p class="eyebrow">Layer 1</p>
+          <h2>Start with the sound.</h2>
+          <p>Build the core setup first: speaker systems, wireless microphones, subs, DJ support, lighting, backline, and an on-site technician when the event needs a steady hand.</p>
+          <span class="tagline">Clear coverage. Clean setup. No guesswork.</span>
+        </div>
+        <div class="service-visual service-visual-a" aria-hidden="true"></div>
+      </article>
+      <article class="scroll-card">
+        <div class="scroll-copy">
+          <p class="eyebrow">Layer 2</p>
+          <h2>Cover the venue, not just the event.</h2>
+          <p>Date, time, guest count, venue size, indoor/outdoor setup, power access, and the number of speaker systems shape the quote around the real room.</p>
+          <span class="tagline">Designed around where people actually listen.</span>
+        </div>
+        <div class="service-visual service-visual-b" aria-hidden="true"></div>
+      </article>
+      <article class="scroll-card">
+        <div class="scroll-copy">
+          <p class="eyebrow">Layer 3</p>
+          <h2>Add the details when they matter.</h2>
+          <p>Wedding, band, DJ, church, school, and corporate questions open only after the base build is complete, so every answer helps create a smarter quote.</p>
+          <span class="tagline">Premium planning without the paperwork headache.</span>
+        </div>
+        <div class="service-visual service-visual-c" aria-hidden="true"></div>
+      </article>
+    </section>
+
+    <section id="builder" class="builder" aria-labelledby="builder-title">
+      <div class="section-heading">
+        <p class="eyebrow">Build it your way</p>
+        <h2 id="builder-title">Build Your Own Event</h2>
+        <p>Skip the package guessing. Start with the services you need, then let the builder shape the quote around the venue, coverage zones, and event type.</p>
+      </div>
+
+      <div class="progress-wrap" aria-label="Build progress">
+        <div class="progress-label">
+          <span id="progressText">0% complete</span>
+          <span id="stepText">Base layer</span>
+        </div>
+        <div class="progress-track">
+          <div id="progressFill" class="progress-fill"></div>
+        </div>
+      </div>
+
+      <form id="eventBuilder" class="builder-form">
+        <section class="builder-layer is-active" aria-labelledby="base-layer-title">
+          <div class="layer-copy">
+            <p class="eyebrow">Base layer</p>
+            <h3 id="base-layer-title">Choose the production layers that make your event feel finished.</h3>
+          </div>
+
+          <div class="option-wheel-hint">
+            <span>Use your scroll wheel or swipe to browse setup options.</span>
+          </div>
+          <div class="scroll-nudge" aria-hidden="true">
+            <span>Swipe / scroll</span>
+            <b></b>
+          </div>
+          <div class="option-grid" id="baseOptions">
+            <button type="button" class="option-card" data-option="Speaker system">
+              <span>Speaker System</span>
+              <small>PA coverage for the main room or outdoor area</small>
+            </button>
+            <button type="button" class="option-card" data-option="Wireless microphones">
+              <span>Wireless Mics</span>
+              <small>Handhelds and lavalier support for speaking</small>
+            </button>
+            <button type="button" class="option-card" data-option="Subwoofer support">
+              <span>Subwoofer Support</span>
+              <small>Added low end for DJ sets, parties, and bands</small>
+            </button>
+            <button type="button" class="option-card" data-option="DJ setup">
+              <span>DJ Setup</span>
+              <small>Controller, facade, playback, and party support</small>
+            </button>
+            <button type="button" class="option-card" data-option="Backline">
+              <span>Backline</span>
+              <small>Drum kit, snares, cymbals, and rider matching</small>
+            </button>
+            <button type="button" class="option-card" data-option="Lighting">
+              <span>Lighting</span>
+              <small>Uplights and party lighting options</small>
+            </button>
+            <button type="button" class="option-card" data-option="Playback triggers">
+              <span>Playback / Triggers</span>
+              <small>SPD-SX style pad and trigger pad support if available</small>
+            </button>
+            <button type="button" class="option-card" data-option="Technician">
+              <span>On-Site Technician</span>
+              <small>Setup, soundcheck, event operation, and strike</small>
+            </button>
+          </div>
+        </section>
+
+        <section id="logisticsLayer" class="builder-layer" aria-labelledby="logistics-title" hidden>
+          <div class="layer-copy">
+            <p class="eyebrow">Second layer</p>
+            <h3 id="logistics-title">Date, time, venue size, and coverage</h3>
+          </div>
+
+          <div class="scroll-nudge" aria-hidden="true">
+            <span>Swipe / scroll</span>
+            <b></b>
+          </div>
+          <div class="field-grid">
+            <label>Event Type
+              <select name="eventType" id="eventType">
+                <option value="">Choose one</option>
+                <option>Wedding</option>
+                <option>DJ / Private Party</option>
+                <option>Band / Backline</option>
+                <option>Corporate</option>
+                <option>Church</option>
+                <option>Community / Nonprofit</option>
+                <option>School Event</option>
+                <option>Other</option>
+              </select>
+            </label>
+            <label>Event Date
+              <input type="date" name="eventDate" id="eventDate">
+            </label>
+            <label>Start Time
+              <input type="time" name="startTime" id="startTime">
+            </label>
+            <label>End Time
+              <input type="time" name="endTime" id="endTime">
+            </label>
+            <label>Venue / Location
+              <input type="text" name="venue" id="venue" placeholder="Venue name or address">
+            </label>
+            <label>Venue Size
+              <select name="venueSize" id="venueSize">
+                <option value="">Choose one</option>
+                <option>Small room under 1,500 sq ft</option>
+                <option>Midsize room 1,500-3,500 sq ft</option>
+                <option>Large room 3,500-6,000 sq ft</option>
+                <option>Outdoor small area</option>
+                <option>Outdoor wide coverage area</option>
+                <option>Multiple rooms or zones</option>
+              </select>
+            </label>
+            <label>Guest Count
+              <select name="guestCount" id="guestCount">
+                <option value="">Choose one</option>
+                <option>Under 50</option>
+                <option>50-100</option>
+                <option>100-150</option>
+                <option>150-200</option>
+                <option>200+</option>
+              </select>
+            </label>
+            <label>How many speaker systems?
+              <select name="speakerSystems" id="speakerSystems">
+                <option value="">Choose one</option>
+                <option>1 main speaker system</option>
+                <option>2 systems: main room + ceremony/overflow</option>
+                <option>3 systems: multiple zones</option>
+                <option>Not sure - recommend coverage</option>
+              </select>
+            </label>
+            <label>Indoor / Outdoor
+              <select name="indoorOutdoor" id="indoorOutdoor">
+                <option value="">Choose one</option>
+                <option>Indoor</option>
+                <option>Outdoor</option>
+                <option>Both</option>
+                <option>Not sure yet</option>
+              </select>
+            </label>
+            <label>Power Access
+              <select name="powerAccess" id="powerAccess">
+                <option value="">Choose one</option>
+                <option>Standard wall power available</option>
+                <option>Power is far from setup area</option>
+                <option>Outdoor power needed</option>
+                <option>Not sure yet</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section id="specificLayer" class="builder-layer" aria-labelledby="specific-title" hidden>
+          <div class="layer-copy">
+            <p class="eyebrow">Third layer</p>
+            <h3 id="specific-title">Event-specific questions</h3>
+          </div>
+          <div class="scroll-nudge" aria-hidden="true">
+            <span>Swipe / scroll</span>
+            <b></b>
+          </div>
+          <div id="specificQuestions" class="field-grid"></div>
+        </section>
+
+        <section id="summaryLayer" class="builder-layer summary-layer" hidden>
+          <div>
+            <p class="eyebrow">Recommended direction</p>
+            <h3 id="recommendationTitle">Build your base layer first</h3>
+            <p id="recommendationCopy">Your recommended setup will appear after the base and venue questions are answered.</p>
+            <p class="minimum-note" id="minimumNote"></p>
+          </div>
+          <div class="summary-card">
+            <h4>Selected setup</h4>
+            <ul id="selectedList"></ul>
+            <div class="quote-preview">
+              <span>Temporary estimate</span>
+              <strong id="inlineQuoteRange">$0 - $0</strong>
+              <p id="inlineQuoteNote">Choose services to see a working quote range.</p>
+              <div class="quote-package-area">
+                <span>Suggested builds</span>
+                <div id="activePackageCard" class="active-package-card"></div>
+                <div id="packageIdeas" class="package-ideas"></div>
+              </div>
+            </div>
+            <div class="final-contact">
+              <h4>Contact info required</h4>
+              <p>Where should JP send the quote and follow-up questions?</p>
+              <label>Full Name
+                <input required type="text" name="contactName" id="contactName" autocomplete="name" placeholder="Your name">
+              </label>
+              <label>Phone
+                <input required type="tel" name="contactPhone" id="contactPhone" autocomplete="tel" placeholder="Best phone number">
+              </label>
+              <label>Email
+                <input required type="email" name="contactEmail" id="contactEmail" autocomplete="email" placeholder="you@email.com">
+              </label>
+            </div>
+            <button type="button" id="openDetails" class="secondary-action">Open Optional Details</button>
+            <button type="submit" class="primary-action">Submit Build Request</button>
+          </div>
+        </section>
+      </form>
+    </section>
+
+    <section id="portfolio" class="backline parallax-band" aria-labelledby="portfolio-title">
+      <div class="section-heading light">
+        <p class="eyebrow">Portfolio ready</p>
+        <h2 id="portfolio-title">Production support for rooms that need to feel professional.</h2>
+        <p>Weddings, private parties, showcases, churches, schools, corporate rooms, and community events can all start from the same simple promise: the setup should look clean, sound clear, and fit the space.</p>
+      </div>
+      <div class="backline-grid">
+        <article>
+          <h3>Live Sound</h3>
+          <p>Clear PA coverage, wireless microphones, subs, and technician support for programs, panels, ceremonies, and rooms up to midsize event scale.</p>
+        </article>
+        <article>
+          <h3>DJ + Lighting</h3>
+          <p>DJ setup, facade, party lighting, uplights, wireless mic support, and a clean presentation for private events and celebrations.</p>
+        </article>
+        <article>
+          <h3>Showcases + Live Music</h3>
+          <p>Production support for artists, small bands, listening rooms, and community showcases where the performance needs to feel polished from the first note.</p>
+        </article>
+        <article>
+          <h3>Weddings</h3>
+          <p>Room-first wedding production starting at $1,000, focused on speaker systems, coverage zones, venue size, microphones, subs, and lighting.</p>
+        </article>
+      </div>
+
+      <div class="gallery-carousel" aria-label="JP Event Production portfolio gallery">
+        <div class="carousel-copy">
+          <p class="eyebrow">In the room</p>
+          <h3>Real setups. Real spaces. Ready-to-book confidence.</h3>
+          <p>Scroll through examples of stage support, DJ setups, lighting, ballroom coverage, outdoor events, and intimate performance rooms.</p>
+        </div>
+
+        <div class="carousel-shell">
+          <div class="carousel-stage" id="portfolioCarousel">
+            <figure class="carousel-slide is-active">
+              <img src="assets/gallery/gallery-hollywood-stage.jpg" alt="Ballroom stage setup with speakers, lighting, and Hollywood letters">
+              <figcaption>
+                <strong>Ballroom Stage Build</strong>
+                <span>Clean front-of-room coverage with lighting and stage presence.</span>
+              </figcaption>
+            </figure>
+            <figure class="carousel-slide">
+              <img src="assets/gallery/gallery-outdoor-band.jpg" alt="Outdoor festival stage with band, speakers, and lighting">
+              <figcaption>
+                <strong>Outdoor Live Music</strong>
+                <span>Stage coverage for bands, community festivals, and public events.</span>
+              </figcaption>
+            </figure>
+            <figure class="carousel-slide">
+              <img src="assets/gallery/gallery-dj-control.jpg" alt="DJ controller and mixer position facing an outdoor stage">
+              <figcaption>
+                <strong>DJ + Control Position</strong>
+                <span>Playback, mixing, and event control from the right spot in the room.</span>
+              </figcaption>
+            </figure>
+            <figure class="carousel-slide">
+              <img src="assets/gallery/gallery-lounge-sound.jpg" alt="Lounge performance room with speakers, microphones, and lighting">
+              <figcaption>
+                <strong>Lounge Performance Setup</strong>
+                <span>Compact rooms can still feel polished, warm, and event-ready.</span>
+              </figcaption>
+            </figure>
+            <figure class="carousel-slide">
+              <img src="assets/gallery/gallery-museum-stage.jpg" alt="Small museum performance space with drum kit, speakers, and microphones">
+              <figcaption>
+                <strong>Community Performance Room</strong>
+                <span>Sound support for showcases, listening rooms, and cultural spaces.</span>
+              </figcaption>
+            </figure>
+            <figure class="carousel-slide">
+              <img src="assets/gallery/gallery-green-stage.jpg" alt="Indoor stage with drum kit, microphones, speaker stacks, and green uplighting">
+              <figcaption>
+                <strong>Band + Uplight Coverage</strong>
+                <span>Speaker systems, microphones, and lighting shaped around the stage.</span>
+              </figcaption>
+            </figure>
+            <figure class="carousel-slide">
+              <img src="assets/gallery/gallery-ballroom-uplights.jpg" alt="Large ballroom with banquet tables, chandeliers, and green uplighting">
+              <figcaption>
+                <strong>Ballroom Uplighting</strong>
+                <span>Room-enhancing lighting that helps the whole event feel intentional.</span>
+              </figcaption>
+            </figure>
+            <figure class="carousel-slide">
+              <img src="assets/gallery/gallery-birthday-outdoor.png" alt="Outdoor birthday party DJ and speaker setup under a covered patio">
+              <figcaption>
+                <strong>Private Celebration Setup</strong>
+                <span>Outdoor DJ and speaker support for parties, milestones, and family events.</span>
+              </figcaption>
+            </figure>
+          </div>
+
+          <div class="carousel-controls" aria-label="Gallery controls">
+            <button type="button" class="carousel-btn" id="galleryPrev" aria-label="Previous gallery image">Prev</button>
+            <div class="carousel-dots" id="galleryDots" aria-label="Choose gallery image"></div>
+            <button type="button" class="carousel-btn" id="galleryNext" aria-label="Next gallery image">Next</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="founder-spotlight">
+        <div>
+          <p class="eyebrow">Behind the build</p>
+          <h3>Production is personal when the room has to feel right.</h3>
+          <p>Meet the founder behind the planning, sound, DJ support, and room-first production approach.</p>
+        </div>
+        <button type="button" id="openFounder" class="founder-button">
+          <img src="assets/founder/j-pierson-dj.jpg" alt="J Pierson working a DJ and audio setup">
+          <span>Meet the Founder</span>
+        </button>
+      </div>
+    </section>
+
+    <section id="signin" class="signin" aria-labelledby="signin-title">
+      <div class="signin-copy">
+        <p class="eyebrow">Coming next</p>
+        <h2 id="signin-title">Client dashboard coming soon.</h2>
+        <p>Later, customers will sign in to see quote status, event details, uploaded riders, contracts, invoices, and booking progress. For now, this button previews where that experience will live.</p>
+      </div>
+      <div class="signin-card">
+        <h3>Event Portal</h3>
+        <p>Track your quote. Update your details. Keep the event plan in one place.</p>
+        <button type="button" class="secondary-action" id="signinPreview">Preview Sign In</button>
+      </div>
+    </section>
+
+    <section id="contact" class="contact" aria-labelledby="contact-title">
+      <div>
+        <p class="eyebrow">Ready when you are</p>
+        <h2 id="contact-title">Build it once. Quote it smarter.</h2>
+      </div>
+      <div class="contact-card">
+        <a href="tel:6093210923">609-321-0923</a>
+        <a href="mailto:jpeventproduction@gmail.com">jpeventproduction@gmail.com</a>
+        <span>Nashville / Middle Tennessee</span>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="detailsDialog" class="details-dialog">
+    <form method="dialog">
+      <button class="dialog-close" aria-label="Close optional details">×</button>
+    </form>
+    <div class="dialog-body">
+      <p class="eyebrow">Optional details</p>
+      <h2>Have more information?</h2>
+      <p>Add it here only if you already have it. This keeps the main builder short.</p>
+      <div class="field-grid">
+        <label>Alternate Contact Name
+          <input type="text" id="clientName" placeholder="Your name">
+        </label>
+        <label>Alternate Contact Email
+          <input type="email" id="clientEmail" placeholder="you@email.com">
+        </label>
+        <label>Alternate Contact Phone
+          <input type="tel" id="clientPhone" placeholder="Best contact number">
+        </label>
+        <label>Budget Range
+          <select id="budgetRange">
+            <option>Not sure yet</option>
+            <option>Under $750</option>
+            <option>$750-$1,000</option>
+            <option>$1,000-$1,500</option>
+            <option>$1,500-$2,500</option>
+            <option>$2,500+</option>
+          </select>
+        </label>
+        <label>Do you have a stage plot or rider?
+          <select id="hasRider">
+            <option>Not yet</option>
+            <option>Yes, I can send it</option>
+            <option>No, I need help creating one</option>
+          </select>
+        </label>
+        <label>Load-in / Parking Notes
+          <input type="text" id="loadInNotes" placeholder="Dock, elevator, street parking, etc.">
+        </label>
+      </div>
+      <label class="full-field">Anything else JP should know?
+        <textarea id="extraNotes" rows="5" placeholder="Timeline, venue restrictions, preferred setup location, band rider details, planner contact, etc."></textarea>
+      </label>
+      <button type="button" id="saveDetails" class="primary-action">Save Optional Details</button>
+    </div>
+  </dialog>
+
+  <dialog id="choiceDialog" class="choice-dialog">
+    <form method="dialog">
+      <button class="dialog-close" aria-label="Close choice picker">×</button>
+    </form>
+    <div class="dialog-body choice-dialog-body">
+      <p class="eyebrow">Choose one</p>
+      <h2 id="choiceDialogTitle">Select an option</h2>
+      <div id="choiceBubbleGrid" class="choice-bubble-grid"></div>
+    </div>
+  </dialog>
+
+  <dialog id="founderDialog" class="founder-dialog">
+    <form method="dialog">
+      <button class="dialog-close" aria-label="Close founder bio">×</button>
+    </form>
+    <div class="dialog-body founder-dialog-body">
+      <img class="founder-photo" src="assets/founder/j-pierson-dj.jpg" alt="J Pierson DJing and managing audio gear">
+      <p class="eyebrow">Meet the Founder</p>
+      <h2>J Pierson</h2>
+      <p>J Pierson is a Nashville-based audio professional, DJ, event producer, and community builder with a Recording Industry degree from Middle Tennessee State University. His work connects live sound, DJ service, creative programming, and practical event planning for rooms that need to feel polished without becoming overbuilt.</p>
+      <p>Through JP Event Production, J brings the same hands-on approach he has used across music showcases, community programs, school production sessions, producer events, and venue operations: understand the room, build the right coverage, keep the setup clean, and make the event feel ready from the first announcement to the last song.</p>
+      <p class="founder-tagline">Room-first sound. Clean execution. Built around the event.</p>
+    </div>
+  </dialog>
+
+  <script src="script.js"></script>
+</body>
+</html>
