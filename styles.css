@@ -2902,3 +2902,16 @@ textarea {
   transform-origin: center center;
   transition: opacity 120ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease !important;
 }
+
+/* v48: simplified, stable horizontal chooser. */
+.option-card,
+.option-card:hover,
+#logisticsLayer .field-grid label,
+#specificQuestions label {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.visible-scrollbar {
+  display: none !important;
+}

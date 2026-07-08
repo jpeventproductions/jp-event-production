@@ -1142,32 +1142,14 @@ function horizontalScrollerFor(element) {
 }
 
 function lockHorizontalScrollPositions(positions, duration = 900) {
-  const cappedDuration = Math.min(duration, 140);
-  const start = performance.now();
-  function tick(now) {
-    restoreHorizontalScrollPositions(positions);
-    if (now - start < cappedDuration) requestAnimationFrame(tick);
-  }
   restoreHorizontalScrollPositions(positions);
-  requestAnimationFrame(tick);
-  setTimeout(() => restoreHorizontalScrollPositions(positions), 0);
-  setTimeout(() => restoreHorizontalScrollPositions(positions), cappedDuration + 60);
+  requestAnimationFrame(() => restoreHorizontalScrollPositions(positions));
 }
 
 function holdScrollerPosition(scroller, left, duration = 260) {
   if (!scroller) return;
-  const cappedDuration = Math.min(duration, 120);
-  const start = performance.now();
-  function tick(now) {
-    scroller.scrollLeft = left;
-    if (now - start < cappedDuration) {
-      requestAnimationFrame(tick);
-    }
-  }
   scroller.scrollLeft = left;
-  requestAnimationFrame(tick);
-  setTimeout(() => { scroller.scrollLeft = left; }, 0);
-  setTimeout(() => { scroller.scrollLeft = left; }, cappedDuration + 50);
+  requestAnimationFrame(() => { scroller.scrollLeft = left; });
 }
 
 function updateStepText(completion) {
@@ -1281,26 +1263,9 @@ function applyPinwheel(scroller, selector) {
   const items = [...scroller.querySelectorAll(selector)];
   if (!items.length) return;
 
-  const center = scroller.scrollLeft + scroller.clientWidth / 2;
-  const isSmallScreen = window.matchMedia("(max-width: 720px)").matches;
-
   items.forEach((item) => {
-    const itemCenter = item.offsetLeft + item.offsetWidth / 2;
-    const distance = (itemCenter - center) / Math.max(scroller.clientWidth / 2, 1);
-    const clamped = Math.max(-1, Math.min(1, distance));
-    const closeness = 1 - Math.abs(clamped);
-
-    const scale = isSmallScreen
-      ? Number((0.975 + closeness * 0.035).toFixed(3))
-      : Number((0.955 + closeness * 0.065).toFixed(3));
-    const lift = isSmallScreen ? 0 : Number((Math.abs(clamped) * 6).toFixed(2));
-    const rotate = isSmallScreen ? 0 : Number((clamped * -4).toFixed(2));
-    const opacity = isSmallScreen
-      ? Number((0.86 + closeness * 0.14).toFixed(3))
-      : Number((0.78 + closeness * 0.22).toFixed(3));
-
-    item.style.transform = `perspective(900px) rotateY(${rotate}deg) translate3d(0, ${lift}px, 0) scale(${scale})`;
-    item.style.opacity = `${opacity}`;
+    item.style.transform = "";
+    item.style.opacity = "";
   });
 }
 
@@ -1732,9 +1697,9 @@ function attachVisibleScrollBar(scroller) {
 }
 
 function initVisibleScrollBars() {
-  [baseOptionsScroller, document.querySelector("#logisticsLayer .field-grid"), specificQuestions]
-    .filter(Boolean)
-    .forEach(attachVisibleScrollBar);
+  // Keep the chooser stable by using the browser's native horizontal scrollbar.
+  // The former custom bar duplicated scroll state and could jitter after choices.
+  return;
 }
 
 const pricingShortcut = document.querySelector(".pricing-shortcut");
