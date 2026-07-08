@@ -2465,3 +2465,164 @@ textarea {
     background: #fffaf0;
   }
 }
+
+/* v42: two-column transparent pricing guide with expandable details under price. */
+.pricing-guide-table-v42 {
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 0 !important;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.pricing-guide-table-v42 th:nth-child(1),
+.pricing-guide-table-v42 td:nth-child(1) {
+  width: 54% !important;
+}
+
+.pricing-guide-table-v42 th:nth-child(2),
+.pricing-guide-table-v42 td:nth-child(2) {
+  width: 46% !important;
+  white-space: normal !important;
+}
+
+.pricing-guide-table-v42 .pricing-row-price {
+  color: #24221f;
+  display: block;
+  font-size: 0.96rem;
+  font-weight: 950;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.pricing-plus-details {
+  margin-top: 8px;
+}
+
+.pricing-plus-details summary {
+  align-items: center;
+  color: #6d520a;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 7px;
+  font-size: 0.8rem;
+  font-weight: 900;
+  list-style: none;
+  max-width: 100%;
+  text-transform: uppercase;
+}
+
+.pricing-plus-details summary::after,
+.pricing-plus-details[open] summary::after {
+  content: "" !important;
+}
+
+.pricing-plus-details summary span {
+  align-items: center;
+  border: 1px solid #eadbb6;
+  border-radius: 999px;
+  display: inline-flex;
+  flex: 0 0 24px;
+  font-size: 1rem;
+  height: 24px;
+  justify-content: center;
+  line-height: 1;
+  width: 24px;
+}
+
+.pricing-plus-details[open] summary span {
+  font-size: 0;
+}
+
+.pricing-plus-details[open] summary span::before {
+  content: "–";
+  font-size: 1rem;
+}
+
+.pricing-plus-details summary em {
+  font-style: normal;
+  overflow-wrap: anywhere;
+}
+
+.pricing-plus-details p {
+  border-top: 1px solid #eadbb6;
+  color: var(--muted) !important;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.48;
+  margin: 9px 0 0 !important;
+  padding-top: 9px;
+}
+
+.pricing-footnote {
+  font-weight: 500 !important;
+}
+
+@media (max-width: 720px) {
+  .pricing-guide-card table.pricing-guide-table-v42,
+  .pricing-guide-card table.pricing-guide-table-v42 thead,
+  .pricing-guide-card table.pricing-guide-table-v42 tbody,
+  .pricing-guide-card table.pricing-guide-table-v42 tr {
+    display: table !important;
+    width: 100% !important;
+  }
+
+  .pricing-guide-card table.pricing-guide-table-v42 thead {
+    display: table-header-group !important;
+  }
+
+  .pricing-guide-card table.pricing-guide-table-v42 tbody {
+    display: table-row-group !important;
+  }
+
+  .pricing-guide-card table.pricing-guide-table-v42 tr {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    display: table-row !important;
+    margin-bottom: 0 !important;
+    overflow: visible !important;
+  }
+
+  .pricing-guide-card table.pricing-guide-table-v42 th,
+  .pricing-guide-card table.pricing-guide-table-v42 td {
+    display: table-cell !important;
+    font-size: 0.84rem;
+    padding: 11px 10px !important;
+    vertical-align: top;
+  }
+
+  .pricing-guide-table-v42 th:nth-child(1),
+  .pricing-guide-table-v42 td:nth-child(1) {
+    width: 48% !important;
+  }
+
+  .pricing-guide-table-v42 th:nth-child(2),
+  .pricing-guide-table-v42 td:nth-child(2) {
+    width: 52% !important;
+  }
+
+  .pricing-guide-card table.pricing-guide-table-v42 td:nth-child(1) {
+    font-size: 0.88rem;
+    font-weight: 950;
+  }
+
+  .pricing-guide-card table.pricing-guide-table-v42 td:nth-child(2) {
+    color: inherit;
+    font-weight: inherit;
+  }
+
+  .pricing-guide-table-v42 .pricing-row-price {
+    font-size: 0.86rem;
+  }
+
+  .pricing-plus-details summary {
+    font-size: 0.7rem;
+  }
+
+  .pricing-plus-details summary span {
+    flex-basis: 22px;
+    height: 22px;
+    width: 22px;
+  }
+}
