@@ -517,8 +517,11 @@ function makeField(question) {
   });
 
   field.addEventListener("change", () => {
+    const scroller = horizontalScrollerFor(field);
+    const left = scroller ? Number(field.dataset.scrollLeftBeforeChoice || scroller.scrollLeft || 0) : 0;
     pulseElement(label);
     updateProgress();
+    if (scroller) holdScrollerPosition(scroller, left, 1000);
   });
   label.appendChild(field);
   enhanceChoiceSelect(field);
@@ -534,6 +537,9 @@ function pulseElement(element) {
 function openChoiceDialog(field) {
   if (!field || field.options.length <= 1) return;
   if (choiceDialog.open) return;
+
+  const openingScroller = horizontalScrollerFor(field);
+  if (openingScroller) field.dataset.scrollLeftBeforeChoice = String(openingScroller.scrollLeft);
 
   activeChoiceField = field;
   const label = field.closest("label");
@@ -553,7 +559,7 @@ function openChoiceDialog(field) {
       const activeField = activeChoiceField;
       const scroller = horizontalScrollerFor(activeField);
       const preservedScrollPositions = rememberHorizontalScrollPositions();
-      const focusedLeft = scroller ? scroller.scrollLeft : 0;
+      const focusedLeft = scroller ? Number(activeField.dataset.scrollLeftBeforeChoice || scroller.scrollLeft || 0) : 0;
 
       activeField.value = option.value;
       activeField.dispatchEvent(new Event("change", { bubbles: true }));
@@ -619,6 +625,7 @@ function renderSpecificQuestions(type) {
 
   if (questions.length) {
     revealLayer(specificLayer);
+    initVisibleScrollBars();
     requestAnimationFrame(refreshPinwheels);
   } else {
     hideLayer(specificLayer);
@@ -728,7 +735,9 @@ const PRICING = {
   additionalWirelessMicrophone: 30,
   includedWirelessMicsPerPackage: 1,
   subwoofer: 200,
-  djHourly: 300,
+  djBaseRate: 300,
+  djIncludedHours: 4,
+  djExtraHourlyAfterFour: 100,
   djMinimumHours: 3,
   backline: 250,
   liveBandCoverage: 100,
@@ -737,7 +746,7 @@ const PRICING = {
   technicianDayRate: 200,
   weddingMinimum: 1000,
   weddingIncludedDjHours: 4,
-  quoteAdjustmentRate: 0.15
+  internalQuoteProtectionRate: 0.15
 };
 
 function selectedOnly(...options) {
@@ -857,9 +866,9 @@ function calculateTemporaryQuote() {
 
     if (djPlayHours > PRICING.weddingIncludedDjHours) {
       const extraHours = djPlayHours - PRICING.weddingIncludedDjHours;
-      const extraDj = extraHours * PRICING.djHourly;
+      const extraDj = extraHours * PRICING.djExtraHourlyAfterFour;
       subtotal += extraDj;
-      items.push(`Additional wedding DJ play time beyond 4 hours: ${extraHours} hr x $300/hr = ${money(extraDj)}`);
+      items.push(`Additional wedding DJ play time beyond 4 hours: ${extraHours} hr x $100/hr = ${money(extraDj)}`);
     }
 
     if (speakerSystemCount > 1) {
@@ -869,10 +878,15 @@ function calculateTemporaryQuote() {
       items.push(`Additional speaker system / zone support: ${extraSystems} x $300 = ${money(extraSystemCost)}`);
     }
   } else if (state.baseOptions.has("DJ setup")) {
-    const djTotal = billableDjHours * PRICING.djHourly;
+    const extraDjHours = Math.max(0, djPlayHours - PRICING.djIncludedHours);
+    const djTotal = PRICING.djBaseRate + extraDjHours * PRICING.djExtraHourlyAfterFour;
     subtotal += djTotal;
     items.push(`DJ play time: ${getDjPlayHoursLabel(type)}`);
-    items.push(`DJ service package: ${billableDjHours} hr x $300/hr = ${money(djTotal)} (includes 1 speaker system, 1 wireless mic, party lights, and on-site technician)`);
+    if (extraDjHours > 0) {
+      items.push(`DJ service package: $300 up to 4 hours + ${extraDjHours} extra hr x $100/hr = ${money(djTotal)} (includes 1 speaker system, 1 wireless mic, party lights, and on-site technician)`);
+    } else {
+      items.push(`DJ service package: $300 up to 4 hours (includes 1 speaker system, 1 wireless mic, party lights, and on-site technician)`);
+    }
 
     if (speakerSystemCount > 1) {
       const extraSystems = speakerSystemCount - 1;
@@ -967,17 +981,16 @@ function calculateTemporaryQuote() {
     items.push("Minimum quote applied: $450");
   }
 
-  const adjustment = Math.round(subtotal * PRICING.quoteAdjustmentRate);
-  if (adjustment > 0) {
-    subtotal += adjustment;
-    items.push(`Quote adjustment: 15% = ${money(adjustment)}`);
+  const internalProtection = Math.round(subtotal * PRICING.internalQuoteProtectionRate);
+  if (internalProtection > 0) {
+    subtotal += internalProtection;
   }
 
   return {
     low: subtotal,
     high: subtotal,
     items,
-    note: "This transparent starting estimate includes a 15% quote adjustment. Final pricing may adjust after JP confirms venue access, exact timing, rider needs, live band coverage, and coverage zones. Please plan for at least 2 hours of setup before the event and 2 hours of tear down after the event."
+    note: "This is a starting estimate. Final pricing may adjust after JP confirms venue access, exact timing, rider needs, live band coverage, and coverage zones. Please plan for at least 2 hours of setup before the event and 2 hours of tear down after the event."
   };
 }
 
@@ -1241,7 +1254,7 @@ document.querySelectorAll("#logisticsLayer input, #logisticsLayer select").forEa
   field.addEventListener("input", updateProgress);
   field.addEventListener("change", () => {
     const scroller = horizontalScrollerFor(field);
-    const left = scroller ? scroller.scrollLeft : 0;
+    const left = scroller ? Number(field.dataset.scrollLeftBeforeChoice || scroller.scrollLeft || 0) : 0;
     pulseElement(field.closest("label"));
     updateProgress();
     if (scroller) holdScrollerPosition(scroller, left, 1000);
@@ -1629,5 +1642,95 @@ document.getElementById("eventBuilder").addEventListener("submit", (event) => {
   openSubmissionEmail(request);
   markEmailSubmissionComplete();
 });
+
+function attachVisibleScrollBar(scroller) {
+  if (!scroller || scroller.dataset.visibleScrollBar === "true") return;
+  scroller.dataset.visibleScrollBar = "true";
+
+  const bar = document.createElement("div");
+  bar.className = "visible-scrollbar";
+  bar.setAttribute("aria-hidden", "true");
+  const thumb = document.createElement("span");
+  thumb.className = "visible-scrollbar-thumb";
+  bar.appendChild(thumb);
+  scroller.insertAdjacentElement("afterend", bar);
+
+  let dragging = false;
+  let startX = 0;
+  let startScrollLeft = 0;
+
+  function updateThumb() {
+    const maxScroll = Math.max(scroller.scrollWidth - scroller.clientWidth, 0);
+    const trackWidth = Math.max(bar.clientWidth, 1);
+    const ratio = scroller.scrollWidth > 0 ? scroller.clientWidth / scroller.scrollWidth : 1;
+    const thumbWidth = Math.max(44, Math.min(trackWidth, trackWidth * ratio));
+    const maxThumbLeft = Math.max(trackWidth - thumbWidth, 0);
+    const thumbLeft = maxScroll ? (scroller.scrollLeft / maxScroll) * maxThumbLeft : 0;
+
+    thumb.style.width = `${thumbWidth}px`;
+    thumb.style.transform = `translateX(${thumbLeft}px)`;
+    bar.classList.toggle("is-disabled", maxScroll <= 2);
+  }
+
+  scroller.addEventListener("scroll", updateThumb, { passive: true });
+  window.addEventListener("resize", updateThumb);
+
+  bar.addEventListener("pointerdown", (event) => {
+    const maxScroll = Math.max(scroller.scrollWidth - scroller.clientWidth, 0);
+    if (!maxScroll) return;
+
+    if (event.target !== thumb) {
+      const rect = bar.getBoundingClientRect();
+      const clickRatio = Math.max(0, Math.min(1, (event.clientX - rect.left) / Math.max(rect.width, 1)));
+      scroller.scrollLeft = clickRatio * maxScroll;
+      updateThumb();
+      return;
+    }
+
+    dragging = true;
+    startX = event.clientX;
+    startScrollLeft = scroller.scrollLeft;
+    thumb.setPointerCapture(event.pointerId);
+    thumb.classList.add("is-dragging");
+  });
+
+  thumb.addEventListener("pointermove", (event) => {
+    if (!dragging) return;
+    const maxScroll = Math.max(scroller.scrollWidth - scroller.clientWidth, 0);
+    const trackWidth = Math.max(bar.clientWidth, 1);
+    const thumbWidth = Math.max(44, Math.min(trackWidth, trackWidth * (scroller.clientWidth / scroller.scrollWidth)));
+    const maxThumbLeft = Math.max(trackWidth - thumbWidth, 1);
+    const delta = event.clientX - startX;
+    scroller.scrollLeft = startScrollLeft + (delta / maxThumbLeft) * maxScroll;
+    updateThumb();
+  });
+
+  thumb.addEventListener("pointerup", (event) => {
+    dragging = false;
+    thumb.classList.remove("is-dragging");
+    try { thumb.releasePointerCapture(event.pointerId); } catch (error) {}
+  });
+
+  requestAnimationFrame(updateThumb);
+  setTimeout(updateThumb, 300);
+}
+
+function initVisibleScrollBars() {
+  [baseOptionsScroller, document.querySelector("#logisticsLayer .field-grid"), specificQuestions]
+    .filter(Boolean)
+    .forEach(attachVisibleScrollBar);
+}
+
+const pricingShortcut = document.querySelector(".pricing-shortcut");
+const transparentPricingGuide = document.getElementById("transparentPricingGuide");
+if (pricingShortcut && transparentPricingGuide) {
+  pricingShortcut.addEventListener("click", (event) => {
+    event.preventDefault();
+    transparentPricingGuide.open = true;
+    transparentPricingGuide.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+}
+
+initVisibleScrollBars();
 
 updateProgress();

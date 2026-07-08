@@ -2165,3 +2165,147 @@ textarea {
 .pricing-guide-card table {
   min-width: 900px;
 }
+
+
+/* v39: always-visible horizontal scroll helper bars + pricing shortcut. */
+.builder-title-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  justify-content: center;
+}
+
+.builder-title-row h2 {
+  margin-bottom: 0;
+}
+
+.pricing-shortcut {
+  align-items: center;
+  background: var(--deep);
+  border: 1px solid var(--deep);
+  border-radius: 999px;
+  color: var(--white);
+  display: inline-flex;
+  font-size: 0.8rem;
+  font-weight: 950;
+  justify-content: center;
+  min-height: 40px;
+  padding: 10px 14px;
+  white-space: nowrap;
+}
+
+.pricing-shortcut:hover,
+.pricing-shortcut:focus {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--ink);
+  outline: 0;
+}
+
+.option-grid,
+#logisticsLayer .field-grid,
+#specificQuestions {
+  overflow-x: scroll !important;
+  padding-bottom: 22px !important;
+  scrollbar-color: var(--gold) #eee6d6 !important;
+  scrollbar-gutter: stable both-edges;
+  scrollbar-width: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+.option-grid::-webkit-scrollbar,
+#logisticsLayer .field-grid::-webkit-scrollbar,
+#specificQuestions::-webkit-scrollbar {
+  height: 14px !important;
+}
+
+.option-grid::-webkit-scrollbar-track,
+#logisticsLayer .field-grid::-webkit-scrollbar-track,
+#specificQuestions::-webkit-scrollbar-track {
+  background: #eee6d6 !important;
+  border-radius: 999px !important;
+}
+
+.option-grid::-webkit-scrollbar-thumb,
+#logisticsLayer .field-grid::-webkit-scrollbar-thumb,
+#specificQuestions::-webkit-scrollbar-thumb {
+  background: var(--gold) !important;
+  border: 3px solid #eee6d6;
+  border-radius: 999px !important;
+}
+
+.visible-scrollbar {
+  background: #eee6d6;
+  border: 1px solid #eadbb6;
+  border-radius: 999px;
+  height: 16px;
+  margin: -8px 2px 18px;
+  overflow: hidden;
+  position: relative;
+  touch-action: none;
+  user-select: none;
+}
+
+.visible-scrollbar-thumb {
+  background: linear-gradient(90deg, var(--gold), #f5d36c);
+  border-radius: inherit;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.16);
+  cursor: grab;
+  display: block;
+  height: 100%;
+  left: 0;
+  min-width: 44px;
+  position: absolute;
+  top: 0;
+  transition: background 160ms ease;
+  width: 44px;
+}
+
+.visible-scrollbar-thumb.is-dragging {
+  cursor: grabbing;
+  background: var(--deep);
+}
+
+.visible-scrollbar.is-disabled {
+  opacity: 0.45;
+}
+
+.contact-email {
+  animation: contactEmailPulse 1.5s ease-in-out infinite;
+  border-radius: 999px;
+  display: inline-flex;
+  justify-content: center;
+  padding: 8px 12px;
+  width: fit-content;
+}
+
+@keyframes contactEmailPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(198,155,54,0.26);
+    color: var(--white);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(198,155,54,0);
+    color: #f5d36c;
+    transform: scale(1.02);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-email {
+    animation: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .builder-title-row {
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .pricing-shortcut {
+    width: min(100%, 260px);
+  }
+}

@@ -148,7 +148,10 @@
     <section id="builder" class="builder" aria-labelledby="builder-title">
       <div class="section-heading">
         <p class="eyebrow">Build it your way</p>
-        <h2 id="builder-title">Build Your Quote</h2>
+        <div class="builder-title-row">
+          <h2 id="builder-title">Build Your Quote</h2>
+          <a class="pricing-shortcut" href="#transparentPricingGuide">View pricing first</a>
+        </div>
         <p>Click the boxes below to start your quote. Choose the services you need, then scroll sideways through the event details so JP can shape the quote around the room, coverage zones, and event type.</p>
       </div>
 
@@ -383,7 +386,10 @@
             </div>
             <button type="button" id="openDetails" class="secondary-action">Open Optional Details</button>
             <button type="submit" class="primary-action">Submit Build Request</button>
-            <details class="pricing-disclosure">
+          </div>
+        </section>
+      </form>
+            <details class="pricing-disclosure" id="transparentPricingGuide">
               <summary>View transparent pricing guide</summary>
               <div class="pricing-guide-card">
                 <p>These are starting prices. JP confirms the final quote after reviewing venue access, timing, coverage zones, and any rider needs.</p>
@@ -408,13 +414,13 @@
                     </tr>
                     <tr>
                       <td>DJ service package</td>
-                      <td>$300/hr, 3 hr minimum</td>
+                      <td>$300 up to 4 hours; +$100/hr after 4 hours</td>
                       <td>Includes 1 speaker system, 1 wireless mic, party lights, and on-site technician support. Final DJ pricing uses the “How many hours will the DJ play?” answer.</td>
                     </tr>
                     <tr>
                       <td>Wedding production minimum</td>
                       <td>$1,000 minimum</td>
-                      <td>Includes DJ coverage up to 4 hours, 1 speaker system, 1 wireless mic, party lights, and event operation. Additional DJ playing time beyond 4 hours adds $300/hr.</td>
+                      <td>Includes DJ coverage up to 4 hours, 1 speaker system, 1 wireless mic, party lights, and event operation. Additional DJ playing time beyond 4 hours adds $100/hr.</td>
                     </tr>
                     <tr>
                       <td>Wireless microphones alone</td>
@@ -456,19 +462,11 @@
                       <td>$200 day/service rate</td>
                       <td>Simple church service technician support can be booked at $200 per service.</td>
                     </tr>
-                    <tr>
-                      <td>Quote adjustment</td>
-                      <td>15%</td>
-                      <td>Added to regular quotes after the selected services are calculated. Church technician-only service stays $200.</td>
-                    </tr>
                   </tbody>
                 </table>
-                <p class="pricing-footnote">Regular quotes include a 15% quote adjustment. Minimum quote is $450 before adjustment, except simple church technician-only service at $200. Wireless microphones are $75 each when booked alone; with a package, 1 wireless mic is included and additional mics are $30 each.</p>
+                <p class="pricing-footnote">Minimum regular quote is $450, except simple church technician-only service at $200. Wireless microphones are $75 each when booked alone. Every package includes 1 wireless mic; additional mics are $30 each. DJ service is $300 up to 4 hours, then $100 per extra DJ-play hour.</p>
               </div>
             </details>
-          </div>
-        </section>
-      </form>
     </section>
 
     <section id="contact" class="contact" aria-labelledby="contact-title">
@@ -478,7 +476,7 @@
       </div>
       <div class="contact-card">
         <a href="tel:6093210923">609-321-0923</a>
-        <a href="mailto:jpeventproduction@gmail.com">jpeventproduction@gmail.com</a>
+        <a class="contact-email" href="mailto:jpeventproduction@gmail.com">jpeventproduction@gmail.com</a>
         <span>Nashville / Middle Tennessee</span>
       </div>
     </section>
