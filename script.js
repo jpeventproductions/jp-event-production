@@ -1246,39 +1246,202 @@ if (gallerySlides.length) {
   });
 }
 
-document.getElementById("eventBuilder").addEventListener("submit", (event) => {
-  event.preventDefault();
-  const formData = new FormData(event.currentTarget);
-  const request = {
+const jpSubmissionInbox = "jpeventproduction@gmail.com";
+
+function cleanValue(value) {
+  return String(value || "").trim();
+}
+
+function fieldValue(id) {
+  const field = document.getElementById(id);
+  return field ? cleanValue(field.value) : "";
+}
+
+function prettyDateTime(value) {
+  if (!value) return "Not provided yet";
+  return value;
+}
+
+function readableLabel(name) {
+  const map = {
+    eventType: "Event type",
+    eventDate: "Event date",
+    startTime: "Start time",
+    endTime: "End time",
+    venue: "Venue / location",
+    venueSize: "Venue size",
+    guestCount: "Guest count",
+    speakerSystems: "Speaker systems",
+    indoorOutdoor: "Indoor / outdoor",
+    powerAccess: "Power access",
+    contactName: "Contact name",
+    contactPhone: "Contact phone",
+    contactEmail: "Contact email"
+  };
+
+  if (map[name]) return map[name];
+
+  return name
+    .replace(/([A-Z])/g, " $1")
+    .replace(/[_-]+/g, " ")
+    .replace(/^./, (letter) => letter.toUpperCase());
+}
+
+function collectSpecificAnswersForEmail() {
+  return [...specificQuestions.querySelectorAll("label")]
+    .map((label) => {
+      const field = label.querySelector("select");
+      if (!field || !field.value) return null;
+      const labelText = label.childNodes[0].textContent.trim();
+      return { label: labelText, value: field.value };
+    })
+    .filter(Boolean);
+}
+
+function buildRequestObject(eventTarget) {
+  const formData = new FormData(eventTarget);
+
+  return {
     createdAt: new Date().toISOString(),
     baseOptions: [...state.baseOptions],
     detailsSaved: state.detailsSaved,
     contact: {
-      name: document.getElementById("contactName").value,
-      phone: document.getElementById("contactPhone").value,
-      email: document.getElementById("contactEmail").value
+      name: fieldValue("contactName"),
+      phone: fieldValue("contactPhone"),
+      email: fieldValue("contactEmail")
     },
     fields: Object.fromEntries(formData.entries()),
     temporaryQuote: calculateTemporaryQuote(),
     optionalDetails: {
-      clientName: document.getElementById("clientName").value,
-      clientEmail: document.getElementById("clientEmail").value,
-      clientPhone: document.getElementById("clientPhone").value,
-      budgetRange: document.getElementById("budgetRange").value,
-      hasRider: document.getElementById("hasRider").value,
-      loadInNotes: document.getElementById("loadInNotes").value,
-      extraNotes: document.getElementById("extraNotes").value
+      clientName: fieldValue("clientName"),
+      clientEmail: fieldValue("clientEmail"),
+      clientPhone: fieldValue("clientPhone"),
+      budgetRange: fieldValue("budgetRange"),
+      hasRider: fieldValue("hasRider"),
+      loadInNotes: fieldValue("loadInNotes"),
+      extraNotes: fieldValue("extraNotes")
     },
     status: "New"
   };
+}
 
+function detailLine(label, value) {
+  const cleaned = cleanValue(value);
+  return `${label}: ${cleaned || "Not provided yet"}`;
+}
+
+function formatEmailBody(request) {
+  const fields = request.fields || {};
+  const quote = request.temporaryQuote || {};
+  const optional = request.optionalDetails || {};
+  const specificAnswers = collectSpecificAnswersForEmail();
+  const quoteItems = Array.isArray(quote.items) ? quote.items : [];
+
+  const lines = [
+    "JP EVENT PRODUCTION — BUILD REQUEST",
+    "Live Sound Audio, DJ and Backline",
+    "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+    "",
+    "NEW WEBSITE SUBMISSION",
+    detailLine("Submitted", new Date(request.createdAt).toLocaleString()),
+    detailLine("Status", request.status),
+    "",
+    "CLIENT CONTACT",
+    detailLine("Name", request.contact.name),
+    detailLine("Phone", request.contact.phone),
+    detailLine("Email", request.contact.email),
+    "",
+    "EVENT SNAPSHOT",
+    detailLine("Event type", fields.eventType),
+    detailLine("Event date", prettyDateTime(fields.eventDate)),
+    detailLine("Start time", prettyDateTime(fields.startTime)),
+    detailLine("End time", prettyDateTime(fields.endTime)),
+    detailLine("Venue / location", fields.venue),
+    detailLine("Guest count", fields.guestCount),
+    detailLine("Venue size", fields.venueSize),
+    detailLine("Indoor / outdoor", fields.indoorOutdoor),
+    detailLine("Power access", fields.powerAccess),
+    detailLine("Speaker systems", fields.speakerSystems),
+    "",
+    "PRODUCTION LAYERS SELECTED",
+    request.baseOptions.length ? request.baseOptions.map((item) => `• ${item}`).join("\n") : "No production layers selected.",
+    "",
+    "TEMPORARY QUOTE RANGE",
+    `${money(quote.low || 0)} - ${money(quote.high || 0)}`,
+    quote.note || "Final pricing should be confirmed after reviewing the full event details.",
+    "",
+    "QUOTE BREAKDOWN",
+    quoteItems.length ? quoteItems.map((item) => `• ${item}`).join("\n") : "No quote breakdown available.",
+    "",
+    "SETUP / TEAR-DOWN EXPECTATION",
+    "Please plan for at least 2 hours before the event start time for setup and at least 2 hours after the event end time for tear-down.",
+    "",
+    "EVENT-SPECIFIC ANSWERS",
+    specificAnswers.length ? specificAnswers.map((item) => `• ${item.label}: ${item.value}`).join("\n") : "No event-specific answers provided yet.",
+    "",
+    "OPTIONAL DETAILS",
+    detailLine("Alternate contact name", optional.clientName),
+    detailLine("Alternate contact email", optional.clientEmail),
+    detailLine("Alternate contact phone", optional.clientPhone),
+    detailLine("Budget range", optional.budgetRange),
+    detailLine("Stage plot / rider", optional.hasRider),
+    detailLine("Load-in / parking notes", optional.loadInNotes),
+    "Additional notes:",
+    optional.extraNotes || "None provided.",
+    "",
+    "STAFF NEXT STEPS",
+    "1. Review event scope, venue needs, timing, and coverage zones.",
+    "2. Confirm any unclear details with the client.",
+    "3. Send the official quote and booking agreement.",
+    "",
+    "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+    "Generated from the JP Event Production website."
+  ];
+
+  return lines.join("\n");
+}
+
+function makeEmailSubject(request) {
+  const name = request.contact.name || "New Client";
+  const type = request.fields.eventType || "Event";
+  const date = request.fields.eventDate || "Date TBD";
+  return `New Build Request: ${name} — ${type} — ${date}`;
+}
+
+function openSubmissionEmail(request) {
+  const subject = makeEmailSubject(request);
+  const body = formatEmailBody(request);
+  const mailtoUrl = `mailto:${jpSubmissionInbox}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+  const emailLink = document.createElement("a");
+  emailLink.href = mailtoUrl;
+  emailLink.style.display = "none";
+  document.body.appendChild(emailLink);
+  emailLink.click();
+  emailLink.remove();
+}
+
+function saveRequestLocally(request) {
   const saved = JSON.parse(localStorage.getItem("jpEventBuildRequests") || "[]");
   saved.push(request);
   localStorage.setItem("jpEventBuildRequests", JSON.stringify(saved));
+}
 
-  recommendationTitle.textContent = "Build request saved.";
-  recommendationCopy.textContent = "Demo mode saved this request in the browser. Supabase can replace this with live lead storage and email alerts.";
-  minimumNote.textContent = "";
+function markEmailSubmissionComplete() {
+  recommendationTitle.textContent = "Build request email prepared.";
+  recommendationCopy.textContent = "Your email app should open with a complete JP Event Production request already addressed to jpeventproduction@gmail.com. Please press Send so JP receives the request.";
+  minimumNote.textContent = "The request is also saved in this browser as a backup.";
+}
+
+document.getElementById("eventBuilder").addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  if (!event.currentTarget.reportValidity()) return;
+
+  const request = buildRequestObject(event.currentTarget);
+  saveRequestLocally(request);
+  openSubmissionEmail(request);
+  markEmailSubmissionComplete();
 });
 
 updateProgress();
