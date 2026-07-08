@@ -2099,3 +2099,69 @@ textarea {
     min-width: 760px;
   }
 }
+
+
+/* v36: pricing guide layout + scroll-position stability. */
+.summary-card {
+  align-items: start;
+}
+
+.summary-card > button,
+.summary-card > .primary-action,
+.summary-card > .secondary-action {
+  justify-self: start;
+  width: auto;
+  max-width: 100%;
+}
+
+.pricing-disclosure {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 100%;
+}
+
+.pricing-guide-card {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pricing-guide-card table {
+  min-width: 880px;
+  table-layout: fixed;
+}
+
+.pricing-guide-card th:nth-child(1),
+.pricing-guide-card td:nth-child(1) {
+  width: 24%;
+}
+
+.pricing-guide-card th:nth-child(2),
+.pricing-guide-card td:nth-child(2) {
+  width: 20%;
+}
+
+.pricing-guide-card th:nth-child(3),
+.pricing-guide-card td:nth-child(3) {
+  width: 56%;
+}
+
+.option-grid,
+#logisticsLayer .field-grid,
+#specificQuestions {
+  overflow-anchor: none !important;
+  scroll-behavior: auto !important;
+  scroll-snap-type: none !important;
+  scroll-padding-inline: 0 !important;
+}
+
+#logisticsLayer .field-grid label,
+#specificQuestions label {
+  scroll-snap-align: start !important;
+  scroll-margin-inline: 0 !important;
+}
+
+
+/* v37: keep pricing guide readable after added live-band and mic rows. */
+.pricing-guide-card table {
+  min-width: 900px;
+}

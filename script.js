@@ -71,7 +71,7 @@ const packageCatalog = [
     name: "Full Production Build",
     tagline: "The bigger room build: sound, DJ, lights, backline, subs, and tech coverage.",
     image: "assets/gallery/gallery-hollywood-stage.jpg",
-    services: ["Speaker system", "Wireless microphones", "Subwoofer support", "DJ setup", "Backline", "Lighting", "Technician"]
+    services: ["Speaker system", "Wireless microphones", "Subwoofer support", "DJ setup", "Backline", "Live band coverage", "Lighting", "Technician"]
   }
 ];
 
@@ -535,18 +535,23 @@ function openChoiceDialog(field) {
     button.textContent = option.textContent;
     button.classList.toggle("is-selected", field.value === option.value);
     button.addEventListener("click", () => {
+      const activeField = activeChoiceField;
+      const scroller = horizontalScrollerFor(activeField);
       const preservedScrollPositions = rememberHorizontalScrollPositions();
-      activeChoiceField.value = option.value;
-      activeChoiceField.dispatchEvent(new Event("change", { bubbles: true }));
-      activeChoiceField.blur();
-      restoreHorizontalScrollPositions(preservedScrollPositions);
-      requestAnimationFrame(() => restoreHorizontalScrollPositions(preservedScrollPositions));
+      const focusedLeft = scroller ? scroller.scrollLeft : 0;
+
+      activeField.value = option.value;
+      activeField.dispatchEvent(new Event("change", { bubbles: true }));
+      activeField.blur();
 
       if (typeof choiceDialog.close === "function") {
         choiceDialog.close();
       } else {
         choiceDialog.removeAttribute("open");
       }
+
+      if (scroller) preservedScrollPositions.push([scroller, focusedLeft]);
+      lockHorizontalScrollPositions(preservedScrollPositions, 1200);
     });
     choiceBubbleGrid.appendChild(button);
   });
@@ -681,15 +686,19 @@ const PRICING = {
   churchTechOnly: 200,
   basicSoundPackage: 450,
   additionalSpeakerSystem: 300,
-  wirelessMicrophone: 75,
+  standaloneWirelessMicrophone: 75,
+  additionalWirelessMicrophone: 30,
+  includedWirelessMicsPerPackage: 1,
   subwoofer: 200,
   djHourly: 300,
   djMinimumHours: 3,
   backline: 250,
+  liveBandCoverage: 100,
   lighting: 250,
   playback: 75,
   technicianDayRate: 200,
-  weddingMinimum: 1000
+  weddingMinimum: 1000,
+  quoteAdjustmentRate: 0.15
 };
 
 function selectedOnly(...options) {
@@ -739,18 +748,18 @@ function requestedWirelessMicCount(type) {
   });
 
   if (state.baseOptions.has("Wireless microphones")) count = Math.max(count, 1);
-  if (state.baseOptions.has("DJ setup")) count = Math.max(count, 2);
-  if (type === "Wedding") count = Math.max(count, 2);
+  if (state.baseOptions.has("DJ setup")) count = Math.max(count, PRICING.includedWirelessMicsPerPackage);
+  if (type === "Wedding") count = Math.max(count, PRICING.includedWirelessMicsPerPackage);
 
   return count;
 }
 
+function hasPackageWithIncludedWireless(type) {
+  return state.baseOptions.has("Speaker system") || state.baseOptions.has("DJ setup") || type === "Wedding";
+}
+
 function includedWirelessMicCount(type) {
-  let count = 0;
-  if (state.baseOptions.has("Speaker system")) count = Math.max(count, 1);
-  if (state.baseOptions.has("DJ setup")) count = Math.max(count, 2);
-  if (type === "Wedding") count = Math.max(count, 2);
-  return count;
+  return hasPackageWithIncludedWireless(type) ? PRICING.includedWirelessMicsPerPackage : 0;
 }
 
 function isChurchTechnicianOnly(type) {
@@ -776,6 +785,7 @@ function calculateTemporaryQuote() {
   const requestedMics = requestedWirelessMicCount(type);
   const includedMics = includedWirelessMicCount(type);
   const additionalMics = Math.max(0, requestedMics - includedMics);
+  const liveBandCoverageSelected = state.baseOptions.has("Live band coverage");
   let subtotal = 0;
 
   if (state.baseOptions.size === 0) {
@@ -798,7 +808,10 @@ function calculateTemporaryQuote() {
 
   if (type === "Wedding") {
     subtotal += PRICING.weddingMinimum;
-    items.push("Wedding production minimum: $1,000 (includes DJ, 1 speaker system, wireless mics, party lights, and event operation)");
+    items.push("Wedding production minimum: $1,000 (includes DJ, 1 speaker system, 1 wireless mic, party lights, and event operation)");
+    if (state.baseOptions.has("DJ setup")) {
+      items.push("DJ setup selected: included in the wedding minimum, no separate DJ package charge");
+    }
 
     if (billableDjHours > PRICING.djMinimumHours) {
       const extraHours = billableDjHours - PRICING.djMinimumHours;
@@ -816,7 +829,7 @@ function calculateTemporaryQuote() {
   } else if (state.baseOptions.has("DJ setup")) {
     const djTotal = billableDjHours * PRICING.djHourly;
     subtotal += djTotal;
-    items.push(`DJ service package: ${billableDjHours} hr x $300/hr = ${money(djTotal)} (includes 1 speaker system, 2 wireless mics, and on-site technician)`);
+    items.push(`DJ service package: ${billableDjHours} hr x $300/hr = ${money(djTotal)} (includes 1 speaker system, 1 wireless mic, party lights, and on-site technician)`);
 
     if (speakerSystemCount > 1) {
       const extraSystems = speakerSystemCount - 1;
@@ -835,15 +848,19 @@ function calculateTemporaryQuote() {
     }
   }
 
-  if (additionalMics > 0) {
-    const micTotal = additionalMics * PRICING.wirelessMicrophone;
-    subtotal += micTotal;
-    items.push(`Additional wireless microphones: ${additionalMics} x $75 flat = ${money(micTotal)}`);
-  } else if (state.baseOptions.has("Wireless microphones") && includedMics > 0) {
+  if (includedMics > 0 && (state.baseOptions.has("Wireless microphones") || requestedMics > 0)) {
     items.push(`Wireless microphone support included (${includedMics} included)`);
+  }
+
+  if (additionalMics > 0) {
+    const micTotal = additionalMics * PRICING.additionalWirelessMicrophone;
+    subtotal += micTotal;
+    items.push(`Additional wireless microphones: ${additionalMics} x $30 flat = ${money(micTotal)}`);
   } else if (state.baseOptions.has("Wireless microphones") && includedMics === 0) {
-    subtotal += PRICING.wirelessMicrophone;
-    items.push("Wireless microphone support: $75 flat");
+    const standaloneMics = Math.max(1, requestedMics);
+    const micTotal = standaloneMics * PRICING.standaloneWirelessMicrophone;
+    subtotal += micTotal;
+    items.push(`Wireless microphones alone: ${standaloneMics} x $75 flat = ${money(micTotal)}`);
   }
 
   if (state.baseOptions.has("Subwoofer support")) {
@@ -856,9 +873,23 @@ function calculateTemporaryQuote() {
     items.push("Backline / rider support starting allowance: $250 flat");
   }
 
+  if (liveBandCoverageSelected) {
+    subtotal += PRICING.liveBandCoverage;
+    items.push("Live band coverage + cables/mics add-on: $100 flat");
+
+    if (!state.baseOptions.has("DJ setup") && type !== "Wedding" && !state.baseOptions.has("Technician")) {
+      subtotal += PRICING.technicianDayRate;
+      items.push("Required on-site technician for live band coverage: $200 flat");
+    } else if (state.baseOptions.has("DJ setup") || type === "Wedding") {
+      items.push("Required technician for live band coverage is already included with DJ / wedding coverage");
+    }
+  }
+
   if (state.baseOptions.has("Lighting")) {
     if (type === "Wedding") {
       items.push("Party lighting included in wedding minimum");
+    } else if (state.baseOptions.has("DJ setup")) {
+      items.push("Party lights included with DJ setup");
     } else {
       subtotal += PRICING.lighting;
       items.push("Event lighting / party lights: $250 flat");
@@ -893,11 +924,17 @@ function calculateTemporaryQuote() {
     items.push("Minimum quote applied: $450");
   }
 
+  const adjustment = Math.round(subtotal * PRICING.quoteAdjustmentRate);
+  if (adjustment > 0) {
+    subtotal += adjustment;
+    items.push(`Quote adjustment: 15% = ${money(adjustment)}`);
+  }
+
   return {
     low: subtotal,
     high: subtotal,
     items,
-    note: "This is a transparent starting estimate based on the selected services. Final pricing may adjust after JP confirms venue access, exact timing, rider needs, and coverage zones. Please plan for at least 2 hours of setup before the event and 2 hours of tear down after the event."
+    note: "This transparent starting estimate includes a 15% quote adjustment. Final pricing may adjust after JP confirms venue access, exact timing, rider needs, live band coverage, and coverage zones. Please plan for at least 2 hours of setup before the event and 2 hours of tear down after the event."
   };
 }
 
@@ -1035,6 +1072,22 @@ function restoreHorizontalScrollPositions(positions) {
   });
 }
 
+function horizontalScrollerFor(element) {
+  if (!element || !element.closest) return null;
+  return element.closest(".option-grid, #logisticsLayer .field-grid, #specificQuestions");
+}
+
+function lockHorizontalScrollPositions(positions, duration = 900) {
+  const start = performance.now();
+  function tick(now) {
+    restoreHorizontalScrollPositions(positions);
+    if (now - start < duration) requestAnimationFrame(tick);
+  }
+  restoreHorizontalScrollPositions(positions);
+  requestAnimationFrame(tick);
+  setTimeout(() => restoreHorizontalScrollPositions(positions), 0);
+  setTimeout(() => restoreHorizontalScrollPositions(positions), duration + 80);
+}
 
 function holdScrollerPosition(scroller, left, duration = 260) {
   if (!scroller) return;
@@ -1084,11 +1137,6 @@ function updateProgress() {
   updateSelectedList();
   updateRecommendation();
   updateQuotePreview();
-  restoreHorizontalScrollPositions(preservedScrollPositions);
-  requestAnimationFrame(() => {
-    restoreHorizontalScrollPositions(preservedScrollPositions);
-    refreshPinwheels();
-  });
 
   if (state.baseOptions.size > 0) {
     revealLayer(logisticsLayer);
@@ -1096,7 +1144,7 @@ function updateProgress() {
     hideLayer(logisticsLayer);
     hideLayer(specificLayer);
     hideLayer(summaryLayer);
-    restoreHorizontalScrollPositions(preservedScrollPositions);
+    lockHorizontalScrollPositions(preservedScrollPositions, 450);
     return;
   }
 
@@ -1105,6 +1153,9 @@ function updateProgress() {
   } else {
     hideLayer(summaryLayer);
   }
+
+  lockHorizontalScrollPositions(preservedScrollPositions, 450);
+  requestAnimationFrame(refreshPinwheels);
 }
 
 baseButtons.forEach((button) => {
@@ -1146,8 +1197,11 @@ baseButtons.forEach((button) => {
 document.querySelectorAll("#logisticsLayer input, #logisticsLayer select").forEach((field) => {
   field.addEventListener("input", updateProgress);
   field.addEventListener("change", () => {
+    const scroller = horizontalScrollerFor(field);
+    const left = scroller ? scroller.scrollLeft : 0;
     pulseElement(field.closest("label"));
     updateProgress();
+    if (scroller) holdScrollerPosition(scroller, left, 1000);
   });
 });
 
