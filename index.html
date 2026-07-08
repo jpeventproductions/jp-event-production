@@ -18,7 +18,7 @@
     <nav aria-label="Main navigation">
       <a href="#builder">Build</a>
       <a href="#portfolio">Portfolio</a>
-      <a class="quick-contact-link" href="#contact">Quick Contact</a>
+      <a class="quick-contact-link" href="#contact">Contact</a>
       <a href="#signin">Sign In</a>
     </nav>
   </header>
@@ -51,7 +51,7 @@
         <div class="scroll-copy">
           <p class="eyebrow">Layer 2</p>
           <h2>Cover the venue, not just the event.</h2>
-          <p>Date and time can be added later if they are not locked in yet. Guest count, venue size, indoor/outdoor setup, power access, and speaker coverage help shape the quote around the real room.</p>
+          <p>Date and exact time can be added later if they are not locked in yet. Guest count, venue size, indoor/outdoor setup, power access, and speaker coverage help shape the quote around the real room.</p>
           <span class="tagline">Designed around where people actually listen.</span>
         </div>
         <div class="service-visual service-visual-b" aria-hidden="true"></div>
@@ -91,13 +91,6 @@
             <h3 id="base-layer-title">Choose the production layers that make your event feel finished.</h3>
           </div>
 
-          <div class="option-wheel-hint">
-            <span>Use your scroll wheel or swipe to browse setup options.</span>
-          </div>
-          <div class="scroll-nudge" aria-hidden="true">
-            <span>Swipe / scroll</span>
-            <b></b>
-          </div>
           <div class="option-grid" id="baseOptions">
             <button type="button" class="option-card" data-option="Speaker system">
               <span>Speaker System</span>
@@ -137,14 +130,10 @@
         <section id="logisticsLayer" class="builder-layer" aria-labelledby="logistics-title" hidden>
           <div class="layer-copy">
             <p class="eyebrow">Second layer</p>
-            <h3 id="logistics-title">Optional date/time, venue size, and coverage</h3>
+            <h3 id="logistics-title">Date, time, venue size, and coverage</h3>
           </div>
+          <p class="setup-teardown-note"><strong>Timing note:</strong> Date and exact time are optional for now. JP needs at least 2 hours before event start for setup and at least 2 hours after event end for tear down.</p>
 
-          <div class="scroll-nudge" aria-hidden="true">
-            <span>Swipe / scroll</span>
-            <b></b>
-          </div>
-          <p class="setup-teardown-note"><strong>Timing note:</strong> JP needs at least 2 hours before the event for setup and at least 2 hours after the event for tear down. Choose the event start/end time if you know it; otherwise select “not sure yet.”</p>
           <div class="field-grid">
             <label>Event Type
               <select name="eventType" id="eventType">
@@ -159,10 +148,10 @@
                 <option>Other</option>
               </select>
             </label>
-            <label>Event Date <span class="optional-tag">Optional</span>
+            <label>Event Date <span class="field-note">optional if not confirmed</span>
               <input type="date" name="eventDate" id="eventDate">
             </label>
-            <label>Event Start / Time Window <span class="optional-tag">Optional</span>
+            <label>Start Time <span class="field-note">optional</span>
               <select name="startTime" id="startTime">
                 <option value="">Not sure yet</option>
                 <option>Morning / exact time TBD</option>
@@ -186,7 +175,7 @@
                 <option>11:00 PM</option>
               </select>
             </label>
-            <label>Event End / Time Window <span class="optional-tag">Optional</span>
+            <label>End Time <span class="field-note">optional</span>
               <select name="endTime" id="endTime">
                 <option value="">Not sure yet</option>
                 <option>Morning / exact time TBD</option>
@@ -208,7 +197,6 @@
                 <option>11:00 PM</option>
                 <option>12:00 AM</option>
                 <option>1:00 AM</option>
-                <option>2:00 AM</option>
               </select>
             </label>
             <label>Venue / Location
@@ -270,10 +258,6 @@
             <p class="eyebrow">Third layer</p>
             <h3 id="specific-title">Event-specific questions</h3>
           </div>
-          <div class="scroll-nudge" aria-hidden="true">
-            <span>Swipe / scroll</span>
-            <b></b>
-          </div>
           <div id="specificQuestions" class="field-grid"></div>
         </section>
 
@@ -291,6 +275,7 @@
               <span>Temporary estimate</span>
               <strong id="inlineQuoteRange">$0 - $0</strong>
               <p id="inlineQuoteNote">Choose services to see a working quote range.</p>
+              <p class="setup-teardown-summary">Timing includes planning for at least 2 hours of setup before the event and 2 hours of tear down after the event.</p>
               <div class="quote-package-area">
                 <span>Suggested builds</span>
                 <div id="activePackageCard" class="active-package-card"></div>

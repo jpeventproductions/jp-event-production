@@ -1,4 +1,5 @@
 :root {
+  --header-offset: 88px;
   --ink: #111111;
   --paper: #fbfaf7;
   --muted: #706a5f;
@@ -108,13 +109,16 @@ nav {
   min-width: 0;
 }
 
+nav a {
+  align-items: center;
+  display: inline-flex;
+}
+
 .quick-contact-link {
-  background: var(--gold);
+  background: var(--ink);
   border-radius: 999px;
-  color: var(--ink);
-  margin: -9px 0;
+  color: var(--white);
   padding: 9px 14px;
-  white-space: nowrap;
 }
 
 .hero {
@@ -142,6 +146,7 @@ nav {
 }
 
 .hero-bg-one {
+  opacity: 1;
   background-image:
     linear-gradient(100deg, rgba(0, 0, 0, 0.76), rgba(0, 0, 0, 0.16)),
     url("assets/gallery/gallery-ballroom-uplights.jpg");
@@ -227,18 +232,17 @@ nav {
 }
 
 .apple-scroll {
-  --stack-top: clamp(82px, 10svh, 112px);
   background: var(--deep);
   color: var(--white);
   display: block;
   isolation: isolate;
-  min-height: max(286svh, 1960px);
-  padding: clamp(96px, 12svh, 150px) 6vw clamp(135px, 18svh, 220px);
+  min-height: max(330svh, 2100px);
+  overflow: visible;
+  padding: calc(var(--header-offset) + 34px) 6vw 34svh;
   position: relative;
 }
 
 .scroll-card {
-  --stack-offset: 0px;
   background:
     radial-gradient(circle at 74% 26%, rgba(198, 155, 54, 0.24), transparent 28%),
     linear-gradient(135deg, #181818, #080808);
@@ -248,30 +252,27 @@ nav {
   gap: clamp(24px, 5vw, 70px);
   grid-template-columns: minmax(0, 0.94fr) minmax(320px, 0.86fr);
   margin: 0 auto;
-  min-height: 62svh;
+  min-height: calc(100svh - var(--header-offset) - 26px);
   overflow: hidden;
   padding: clamp(28px, 6vw, 80px);
   position: sticky;
-  top: calc(var(--stack-top) + var(--stack-offset));
+  top: var(--header-offset);
   transform: translateZ(0);
   width: min(100%, 1320px);
   will-change: transform;
 }
 
 .scroll-card:nth-child(1) {
-  --stack-offset: 0px;
   z-index: 1;
 }
 
 .scroll-card:nth-child(2) {
-  --stack-offset: 16px;
-  margin-top: clamp(150px, 24svh, 280px);
+  margin-top: 42svh;
   z-index: 2;
 }
 
 .scroll-card:nth-child(3) {
-  --stack-offset: 32px;
-  margin-top: clamp(150px, 24svh, 280px);
+  margin-top: 42svh;
   z-index: 3;
 }
 
@@ -466,7 +467,7 @@ nav {
   overscroll-behavior-inline: contain;
   padding: 4px 2px 18px;
   scroll-behavior: smooth;
-  scroll-snap-type: x mandatory;
+  scroll-snap-type: none;
   scrollbar-color: var(--gold) #eee6d6;
   scrollbar-width: thin;
 }
@@ -488,14 +489,6 @@ nav {
   border-radius: 999px;
 }
 
-.scroll-preview {
-  scroll-behavior: smooth;
-}
-
-.scroll-preview > * {
-  animation: scrollPreviewBreath 900ms ease-out 1;
-}
-
 #logisticsLayer .field-grid label,
 #specificQuestions label {
   background: rgba(255, 255, 255, 0.82);
@@ -505,94 +498,47 @@ nav {
   flex: 0 0 clamp(250px, 32vw, 360px);
   min-height: 128px;
   padding: 18px;
-  scroll-snap-align: center;
+  scroll-snap-align: start;
 }
 
-#logisticsLayer .field-grid label,
-#specificQuestions label,
-.option-card {
-  overflow: hidden;
-}
-
-#logisticsLayer .field-grid label,
-#specificQuestions label {
-  position: relative;
-}
-
-
-.setup-teardown-note {
-  background: #111015;
-  border: 1px solid rgba(245, 211, 108, 0.32);
+.setup-teardown-note,
+.setup-teardown-summary {
+  background: #fff7df;
+  border: 1px solid #eadbb6;
   border-radius: 18px;
-  color: rgba(255, 255, 255, 0.82);
-  font-size: 0.95rem;
+  color: #5f480b;
+  font-size: 0.92rem;
+  font-weight: 800;
   line-height: 1.45;
-  margin: 0 0 16px;
-  max-width: 980px;
-  padding: 14px 16px;
+  margin: 0 0 18px;
+  padding: 13px 15px;
 }
 
-.setup-teardown-note strong {
-  color: var(--gold);
+.setup-teardown-summary {
+  margin: 6px 0 0;
 }
 
-.optional-tag {
-  align-self: start;
-  background: rgba(198, 155, 54, 0.12);
-  border: 1px solid rgba(198, 155, 54, 0.28);
-  border-radius: 999px;
-  color: #775b10;
-  display: inline-flex;
-  font-size: 0.67rem;
-  font-weight: 950;
-  letter-spacing: 0.08em;
-  margin-left: 6px;
-  padding: 3px 7px;
-  text-transform: uppercase;
+.field-note {
+  color: var(--muted);
+  display: inline;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.scroll-preview {
+  scroll-behavior: smooth;
 }
 
 .option-wheel-hint {
-  align-items: center;
-  background: #f7f1e4;
-  border: 1px solid #eadbb6;
-  border-radius: 999px;
-  color: #6d520a;
-  display: inline-flex;
-  font-size: 0.86rem;
-  font-weight: 950;
-  margin: 0 0 16px;
-  padding: 9px 14px;
+  display: none;
 }
 
 .scroll-nudge {
-  align-items: center;
-  animation: scrollNudgeFade 2.4s ease-in-out infinite;
-  background: rgba(255, 250, 240, 0.92);
-  border: 1px solid rgba(198, 155, 54, 0.34);
-  border-radius: 999px;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
-  color: #6d520a;
   display: none;
-  font-size: 0.74rem;
-  font-weight: 950;
-  gap: 9px;
-  justify-self: start;
-  letter-spacing: 0.12em;
-  margin: 0 0 12px;
-  max-width: 100%;
-  padding: 8px 11px 8px 13px;
-  pointer-events: none;
-  text-transform: uppercase;
 }
 
 .scroll-nudge b {
-  animation: scrollArrowDrift 1.35s ease-in-out infinite;
-  border: solid currentColor;
-  border-width: 0 2px 2px 0;
-  display: block;
-  height: 8px;
-  transform: rotate(-45deg);
-  width: 8px;
+  display: none;
 }
 
 .option-grid {
@@ -604,7 +550,7 @@ nav {
   overscroll-behavior-inline: contain;
   padding: 4px 2px 18px;
   scroll-behavior: smooth;
-  scroll-snap-type: x mandatory;
+  scroll-snap-type: none;
   scrollbar-color: var(--gold) #eee6d6;
   scrollbar-width: thin;
 }
@@ -633,9 +579,21 @@ nav {
   min-height: 160px;
   padding: 20px;
   position: relative;
-  scroll-snap-align: center;
+  scroll-snap-align: start;
   text-align: left;
   transition: border-color 180ms ease, box-shadow 180ms ease, transform 220ms ease, background 180ms ease, opacity 220ms ease;
+}
+
+.option-card::after {
+  background: radial-gradient(circle, rgba(245, 211, 108, 0.5), transparent 62%);
+  border-radius: inherit;
+  content: "";
+  inset: -1px;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  transform: scale(0.96);
+  transition: opacity 220ms ease, transform 220ms ease;
 }
 
 .option-card:hover {
@@ -648,6 +606,11 @@ nav {
   background: var(--deep);
   border-color: var(--deep);
   color: var(--white);
+}
+
+.option-card.is-selected::after {
+  opacity: 0.22;
+  transform: scale(1);
 }
 
 .option-card.just-selected {
@@ -722,7 +685,7 @@ textarea {
   align-items: stretch;
   display: grid;
   gap: 24px;
-  grid-template-columns: 1.2fr 0.8fr;
+  grid-template-columns: 1fr;
   min-width: 0;
 }
 
@@ -732,6 +695,7 @@ textarea {
   border-radius: 24px;
   display: grid;
   gap: 14px;
+  grid-template-columns: minmax(0, 1fr);
   min-width: 0;
   padding: 22px;
 }
@@ -853,7 +817,7 @@ textarea {
   max-width: 100%;
   overflow-x: auto;
   padding: 2px 0 8px;
-  scroll-snap-type: x mandatory;
+  scroll-snap-type: none;
   scrollbar-color: var(--gold) #eee6d6;
   scrollbar-width: thin;
 }
@@ -908,42 +872,21 @@ textarea {
   color: rgba(255, 255, 255, 0.76);
 }
 
-.backline-grid {
-  display: block;
-  margin: 28px auto 18px;
-  max-width: 900px;
-  min-height: 128px;
-  position: relative;
-}
-
 .backline-grid article {
-  align-content: center;
-  animation: portfolioFeatureFade 20s ease-in-out infinite;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 26px;
   backdrop-filter: blur(16px);
-  display: grid;
-  inset: 0;
-  opacity: 0;
-  padding: 20px 24px;
-  position: absolute;
-  transform: translateY(14px) scale(0.985);
+  padding: 24px;
 }
 
-.backline-grid article:nth-child(1) { animation-delay: 0s; }
-.backline-grid article:nth-child(2) { animation-delay: 5s; }
-.backline-grid article:nth-child(3) { animation-delay: 10s; }
-.backline-grid article:nth-child(4) { animation-delay: 15s; }
-
 .backline-grid h3 {
-  margin: 0 0 8px;
+  margin: 0 0 10px;
 }
 
 .backline-grid p {
   color: rgba(255, 255, 255, 0.74);
-  line-height: 1.5;
-  margin: 0;
+  line-height: 1.55;
 }
 
 .founder-spotlight {
@@ -951,7 +894,7 @@ textarea {
   display: grid;
   gap: clamp(22px, 5vw, 48px);
   grid-template-columns: 1fr minmax(260px, 420px);
-  margin-top: 28px;
+  margin-top: 58px;
 }
 
 .founder-spotlight h3 {
@@ -1237,28 +1180,6 @@ textarea {
   padding: 0;
   width: min(940px, calc(100dvw - 28px));
 }
-.founder-dialog.is-auto-open[open] {
-  animation: founderAutoIn 360ms cubic-bezier(0.16, 1, 0.3, 1);
-  bottom: clamp(16px, 4vw, 42px);
-  left: auto;
-  margin: 0;
-  max-height: min(72dvh, 650px);
-  max-width: min(560px, calc(100dvw - 28px));
-  position: fixed;
-  right: clamp(14px, 4vw, 42px);
-  top: auto;
-  width: min(560px, calc(100dvw - 28px));
-  z-index: 35;
-}
-
-.founder-dialog.is-auto-open .founder-dialog-body {
-  min-height: 0;
-}
-
-.founder-dialog.is-auto-open .founder-photo {
-  max-width: 180px;
-  width: 42%;
-}
 
 .choice-dialog {
   background:
@@ -1387,15 +1308,11 @@ textarea {
 
 @keyframes heroFade {
   0%,
-  10% {
-    opacity: 0;
-    transform: scale(1.08);
-  }
-  18%,
-  42% {
+  30% {
     opacity: 1;
+    transform: scale(1.055);
   }
-  52%,
+  40%,
   100% {
     opacity: 0;
     transform: scale(1);
@@ -1428,7 +1345,9 @@ textarea {
   100% {
     box-shadow: 0 0 0 rgba(198, 155, 54, 0);
   }
-}@keyframes scrollNudgeFade {
+}
+
+@keyframes scrollNudgeFade {
   0%,
   100% {
     opacity: 0.48;
@@ -1448,53 +1367,88 @@ textarea {
     opacity: 1;
     transform: translateX(7px) rotate(-45deg);
   }
-}@keyframes portfolioFeatureFade {
-  0%, 12% {
-    opacity: 0;
-    transform: translateY(14px) scale(0.985);
-  }
-  18%, 38% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  46%, 100% {
-    opacity: 0;
-    transform: translateY(-10px) scale(0.99);
-  }
-}
-
-@keyframes founderAutoIn {
-  0% {
-    opacity: 0;
-    transform: translateY(24px) scale(0.96);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-
-@keyframes scrollPreviewBreath {
-  0% {
-    filter: none;
-  }
-  45% {
-    filter: drop-shadow(0 12px 18px rgba(198, 155, 54, 0.12));
-  }
-  100% {
-    filter: none;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .scroll-nudge,
-  .scroll-nudge b,
-  .scroll-preview > * {
-    animation: none !important;
+  .scroll-nudge b {
+    animation: none;
+  }
+}
+
+@media (max-width: 1020px) {
+  .field-grid,
+  .backline-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .backline-grid article,
+  .summary-layer,
+  .layer-copy,
+  .contact,
+  .signin,
+  .scroll-card,
+  .gallery-carousel,
+  .founder-spotlight {
+    grid-template-columns: 1fr;
+  }
+
+  .contact {
+    display: grid;
+  }
+}
+
+@media (max-width: 720px) {
+  .site-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+    position: absolute;
+  }
+
+  nav {
+    flex-wrap: wrap;
+  }
+
+  .hero {
+    min-height: 92svh;
+    padding-top: 155px;
+  }
+
+  .scroll-card {
+    min-height: 58svh;
+    position: relative;
+    top: 0;
+  }
+
+  .service-visual {
+    border-radius: 30px;
+    min-height: 260px;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.7) 14%, #000 34%, #000 100%);
+    mask-image: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.7) 14%, #000 34%, #000 100%);
+  }
+
+  .carousel-stage {
+    aspect-ratio: 4 / 3;
+    border-radius: 24px;
+  }
+
+  .carousel-controls {
+    align-items: stretch;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .progress-wrap {
+    position: static;
+  }
+
+  .field-grid,
+  .backline-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #logisticsLayer .field-grid label,
+  #specificQuestions label,
   .option-card {
     flex-basis: min(82vw, 330px);
     min-height: 130px;
@@ -1530,35 +1484,138 @@ textarea {
 }
 
 
-@media (max-width: 1020px) {
-  .backline-grid {
-    display: block;
-    grid-template-columns: none;
-    min-height: 142px;
+/* v24 stability overrides */
+@media (min-width: 900px) {
+  .summary-layer {
+    width: 100%;
+  }
+
+  .summary-card {
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.8fr);
+  }
+
+  .summary-card > h4,
+  .summary-card > ul,
+  .quote-preview {
+    grid-column: 1 / -1;
   }
 }
 
 @media (max-width: 720px) {
+  :root {
+    --header-offset: 122px;
+  }
+
+  .site-header {
+    align-items: stretch;
+    background: rgba(251, 250, 247, 0.92);
+    flex-direction: column;
+    gap: 8px;
+    padding: 9px 4vw 10px;
+    position: fixed;
+  }
+
+  .brand {
+    gap: 9px;
+    width: 100%;
+  }
+
+  .brand-logo-mark {
+    height: 38px;
+  }
+
+  .brand strong {
+    font-size: 0.92rem;
+  }
+
+  .brand small {
+    font-size: 0.58rem;
+    letter-spacing: 0.05em;
+  }
+
+  nav {
+    display: grid;
+    gap: 6px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  nav a {
+    border: 1px solid rgba(232, 226, 213, 0.9);
+    border-radius: 999px;
+    font-size: clamp(0.68rem, 2.7vw, 0.78rem);
+    justify-content: center;
+    min-height: 32px;
+    padding: 6px 4px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
   .quick-contact-link {
-    margin: 0;
+    padding: 6px 4px;
   }
 
-  .backline-grid {
-    display: block;
-    grid-template-columns: none;
-    min-height: 168px;
+  .hero {
+    min-height: 92svh;
+    padding-top: calc(var(--header-offset) + 36px);
   }
 
-  .backline-grid article {
-    padding: 18px;
+  .apple-scroll {
+    min-height: max(318svh, 1720px);
+    padding: calc(var(--header-offset) + 22px) 4vw 30svh;
   }
 
-  .founder-dialog.is-auto-open[open] {
-    bottom: 10px;
-    left: 10px;
-    max-height: min(76dvh, 620px);
-    max-width: calc(100dvw - 20px);
-    right: 10px;
-    width: calc(100dvw - 20px);
+  .scroll-card {
+    border-radius: 30px;
+    grid-template-columns: 1fr;
+    min-height: calc(100svh - var(--header-offset) - 18px);
+    padding: clamp(20px, 6vw, 34px);
+    position: sticky;
+    top: var(--header-offset);
+  }
+
+  .scroll-card:nth-child(2),
+  .scroll-card:nth-child(3) {
+    margin-top: 36svh;
+  }
+
+  .scroll-card h2 {
+    font-size: clamp(2rem, 10vw, 3.2rem);
+  }
+
+  .scroll-card p:not(.eyebrow) {
+    font-size: 0.98rem;
+    line-height: 1.5;
+  }
+
+  .service-visual {
+    min-height: 210px;
+  }
+
+  #logisticsLayer .field-grid,
+  #specificQuestions,
+  .option-grid {
+    padding-bottom: 14px;
+  }
+
+  #logisticsLayer .field-grid label,
+  #specificQuestions label,
+  .option-card {
+    flex-basis: min(84vw, 330px);
+    min-height: 130px;
+  }
+}
+
+@media (max-width: 390px) {
+  :root {
+    --header-offset: 116px;
+  }
+
+  .brand small {
+    display: none;
+  }
+
+  nav a {
+    font-size: 0.66rem;
   }
 }
