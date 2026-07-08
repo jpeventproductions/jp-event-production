@@ -77,8 +77,6 @@ const packageCatalog = [
 
 const requiredLogistics = [
   "eventType",
-  "eventDate",
-  "startTime",
   "venueSize",
   "guestCount",
   "speakerSystems",
@@ -506,6 +504,7 @@ function makeField(question) {
   field.addEventListener("change", () => {
     pulseElement(label);
     updateProgress();
+    queueLayerScrollHints();
   });
   label.appendChild(field);
   enhanceChoiceSelect(field);
@@ -594,6 +593,7 @@ function renderSpecificQuestions(type) {
   if (questions.length) {
     revealLayer(specificLayer);
     requestAnimationFrame(refreshPinwheels);
+    queueLayerScrollHints();
   } else {
     hideLayer(specificLayer);
   }
@@ -632,16 +632,30 @@ function getCompletion() {
   return Math.min(100, Math.round((answered / total) * 100));
 }
 
+function parseTimeChoice(value) {
+  if (!value) return null;
+
+  const trimmed = value.trim();
+  const match = trimmed.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (!match) return null;
+
+  let hour = Number(match[1]);
+  const minute = Number(match[2]);
+  const period = match[3].toUpperCase();
+
+  if (period === "PM" && hour !== 12) hour += 12;
+  if (period === "AM" && hour === 12) hour = 0;
+
+  return hour * 60 + minute;
+}
+
 function getEventHours() {
   const start = document.getElementById("startTime").value;
   const end = document.getElementById("endTime").value;
+  const startTotal = parseTimeChoice(start);
+  let endTotal = parseTimeChoice(end);
 
-  if (!start || !end) return 3;
-
-  const [startHour, startMinute] = start.split(":").map(Number);
-  const [endHour, endMinute] = end.split(":").map(Number);
-  let startTotal = startHour * 60 + startMinute;
-  let endTotal = endHour * 60 + endMinute;
+  if (startTotal === null || endTotal === null) return 3;
 
   if (endTotal <= startTotal) endTotal += 24 * 60;
 
@@ -767,7 +781,7 @@ function calculateTemporaryQuote() {
     low,
     high,
     items,
-    note: "Pricing is a helpful starting point and may change after JP confirms the full event details. Ask about current specials when you submit your request."
+    note: "Pricing is a helpful starting point and may change after JP confirms the full event details. Plan for at least 2 hours before the event for setup and 2 hours after for tear down. Ask about current specials when you submit your request."
   };
 }
 
@@ -859,15 +873,26 @@ function updateSelectedList() {
   const powerAccess = valueFor("powerAccess");
 
   if (eventType) summaryItems.push(`Event type: ${eventType}`);
-  if (eventDate) summaryItems.push(`Event date: ${eventDate}`);
-  if (startTime || endTime) summaryItems.push(`Time window: ${startTime || "TBD"} - ${endTime || "TBD"} (${hours} hr estimate)`);
+  if (eventDate) {
+    summaryItems.push(`Event date: ${eventDate}`);
+  } else {
+    summaryItems.push("Event date: Not sure yet");
+  }
+
+  if (startTime || endTime) {
+    summaryItems.push(`Event time/window: ${startTime || "Not sure yet"} - ${endTime || "Not sure yet"} (${hours} hr pricing estimate when exact times are available)`);
+  } else {
+    summaryItems.push("Event time/window: Not sure yet");
+  }
+
+  summaryItems.push("Production timing: plan for at least 2 hours before event start for setup and at least 2 hours after event end for tear down.");
   if (venue) summaryItems.push(`Venue/location: ${venue}`);
   if (venueSize) summaryItems.push(`Venue size: ${venueSize}`);
   if (guestCount) summaryItems.push(`Guest count: ${guestCount}`);
   if (speakerSystems) summaryItems.push(`Speaker systems requested: ${speakerSystems}`);
   if (indoorOutdoor) summaryItems.push(`Coverage type: ${indoorOutdoor}`);
   if (powerAccess) summaryItems.push(`Power access: ${powerAccess}`);
-  if (state.baseOptions.has("DJ setup")) summaryItems.push(`DJ service hours priced from: ${Math.max(3, hours)} hr`);
+  if (state.baseOptions.has("DJ setup")) summaryItems.push(`DJ service hours priced from: ${Math.max(3, hours)} hr once the event time is confirmed`);
 
   [...specificQuestions.querySelectorAll("label")].forEach((label) => {
     const field = label.querySelector("select");
@@ -904,7 +929,7 @@ function updateRecommendation() {
 
   if (!type || !systems || !size) {
     recommendationTitle.textContent = "Base layer selected.";
-    recommendationCopy.textContent = "Add the event type, venue size, and speaker-system count so JP can quote the right coverage.";
+    recommendationCopy.textContent = "Add the event type, venue size, guest count, coverage type, power access, and speaker-system count. Date and time can stay blank if they are not confirmed yet.";
     return;
   }
 
@@ -938,7 +963,7 @@ function updateStepText(completion) {
   }
 
   if (getAnsweredLogisticsCount() < requiredLogistics.length) {
-    stepText.textContent = "Date, time, venue and speaker systems";
+    stepText.textContent = "Venue, coverage and speaker systems";
     return;
   }
 
@@ -980,6 +1005,8 @@ function updateProgress() {
   } else {
     hideLayer(summaryLayer);
   }
+
+  queueLayerScrollHints();
 }
 
 baseButtons.forEach((button) => {
@@ -1058,6 +1085,43 @@ function refreshPinwheels() {
   }, { passive: false });
 });
 
+
+const scrollHintState = new WeakMap();
+
+function hasHorizontalOverflow(scroller) {
+  return scroller && scroller.scrollWidth > scroller.clientWidth + 12;
+}
+
+function previewHorizontalScroll(scroller, key = "default") {
+  if (!hasHorizontalOverflow(scroller)) return;
+  if (scrollHintState.get(scroller) === key) return;
+  scrollHintState.set(scroller, key);
+
+  const startLeft = scroller.scrollLeft;
+  const maxShift = Math.min(92, Math.max(44, scroller.clientWidth * 0.18));
+  const targetLeft = Math.min(scroller.scrollWidth - scroller.clientWidth, startLeft + maxShift);
+  if (targetLeft <= startLeft + 4) return;
+
+  scroller.classList.add("scroll-preview");
+  window.setTimeout(() => scroller.scrollTo({ left: targetLeft, behavior: "smooth" }), 180);
+  window.setTimeout(() => scroller.scrollTo({ left: startLeft, behavior: "smooth" }), 880);
+  window.setTimeout(() => scroller.classList.remove("scroll-preview"), 1500);
+}
+
+function queueLayerScrollHints() {
+  if (!state.baseOptions.size) {
+    window.setTimeout(() => previewHorizontalScroll(baseOptionsScroller, "base-empty"), 650);
+  }
+
+  if (state.baseOptions.size && getAnsweredLogisticsCount() < requiredLogistics.length) {
+    window.setTimeout(() => previewHorizontalScroll(document.querySelector("#logisticsLayer .field-grid"), `logistics-${getAnsweredLogisticsCount()}`), 650);
+  }
+
+  if (eventTypeField.value && getTotalSpecificCount() && getAnsweredSpecificCount() < getTotalSpecificCount()) {
+    window.setTimeout(() => previewHorizontalScroll(specificQuestions, `specific-${getAnsweredSpecificCount()}`), 650);
+  }
+}
+
 document.querySelectorAll("#eventBuilder select").forEach(enhanceChoiceSelect);
 window.addEventListener("resize", () => requestAnimationFrame(refreshPinwheels));
 
@@ -1089,13 +1153,88 @@ if (signinPreview) {
   });
 }
 
-document.getElementById("openFounder").addEventListener("click", () => {
+function openFounderDialog(mode = "manual") {
+  cancelFounderAutoOpen();
+  if (!founderDialog || founderDialog.open) return;
+
+  founderDialog.classList.toggle("is-auto-open", mode === "auto");
+  founderDialog.dataset.openMode = mode;
+
+  if (mode === "auto" && typeof founderDialog.show === "function") {
+    founderDialog.show();
+    return;
+  }
+
   if (typeof founderDialog.showModal === "function") {
     founderDialog.showModal();
   } else {
     founderDialog.setAttribute("open", "");
   }
+}
+
+function closeFounderDialogIfAuto() {
+  cancelFounderAutoOpen();
+  if (!founderDialog || !founderDialog.open || founderDialog.dataset.openMode !== "auto") return;
+  founderDialog.close();
+  founderDialog.classList.remove("is-auto-open");
+  delete founderDialog.dataset.openMode;
+}
+
+founderDialog.addEventListener("close", () => {
+  founderDialog.classList.remove("is-auto-open");
+  delete founderDialog.dataset.openMode;
 });
+
+const founderButton = document.getElementById("openFounder");
+if (founderButton) {
+  founderButton.addEventListener("click", () => openFounderDialog("manual"));
+}
+
+const founderSpotlight = document.querySelector(".founder-spotlight");
+let lastPageY = window.scrollY;
+let founderAutoOpenTimer = null;
+
+function cancelFounderAutoOpen() {
+  if (!founderAutoOpenTimer) return;
+  clearTimeout(founderAutoOpenTimer);
+  founderAutoOpenTimer = null;
+}
+
+function scheduleFounderAutoOpen() {
+  if (founderAutoOpenTimer || (founderDialog && founderDialog.open)) return;
+  founderAutoOpenTimer = window.setTimeout(() => {
+    founderAutoOpenTimer = null;
+    if (!founderSpotlight || (founderDialog && founderDialog.open)) return;
+
+    const rect = founderSpotlight.getBoundingClientRect();
+    const stillInOpenZone = rect.top < window.innerHeight * 0.68 && rect.bottom > window.innerHeight * 0.2;
+    if (stillInOpenZone) openFounderDialog("auto");
+  }, 1000);
+}
+
+function handlePageScrollEffects() {
+  const currentY = window.scrollY;
+  const direction = currentY > lastPageY ? "down" : currentY < lastPageY ? "up" : "still";
+  lastPageY = currentY;
+
+  if (!founderSpotlight || direction === "still") return;
+
+  const rect = founderSpotlight.getBoundingClientRect();
+  const inOpenZone = rect.top < window.innerHeight * 0.68 && rect.bottom > window.innerHeight * 0.2;
+  const fullyAway = rect.bottom < 0 || rect.top > window.innerHeight;
+
+  if (direction === "down" && inOpenZone && (!founderDialog || !founderDialog.open)) {
+    scheduleFounderAutoOpen();
+  } else if (direction === "up" || fullyAway) {
+    cancelFounderAutoOpen();
+  }
+
+  if ((direction === "up" || fullyAway) && founderDialog && founderDialog.open && founderDialog.dataset.openMode === "auto") {
+    closeFounderDialogIfAuto();
+  }
+}
+
+window.addEventListener("scroll", handlePageScrollEffects, { passive: true });
 
 const gallerySlides = [...document.querySelectorAll(".carousel-slide")];
 const galleryDots = document.getElementById("galleryDots");
@@ -1224,3 +1363,4 @@ document.getElementById("eventBuilder").addEventListener("submit", (event) => {
 });
 
 updateProgress();
+queueLayerScrollHints();

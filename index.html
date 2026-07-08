@@ -18,6 +18,7 @@
     <nav aria-label="Main navigation">
       <a href="#builder">Build</a>
       <a href="#portfolio">Portfolio</a>
+      <a class="quick-contact-link" href="#contact">Quick Contact</a>
       <a href="#signin">Sign In</a>
     </nav>
   </header>
@@ -50,7 +51,7 @@
         <div class="scroll-copy">
           <p class="eyebrow">Layer 2</p>
           <h2>Cover the venue, not just the event.</h2>
-          <p>Date, time, guest count, venue size, indoor/outdoor setup, power access, and the number of speaker systems shape the quote around the real room.</p>
+          <p>Date and time can be added later if they are not locked in yet. Guest count, venue size, indoor/outdoor setup, power access, and speaker coverage help shape the quote around the real room.</p>
           <span class="tagline">Designed around where people actually listen.</span>
         </div>
         <div class="service-visual service-visual-b" aria-hidden="true"></div>
@@ -136,13 +137,14 @@
         <section id="logisticsLayer" class="builder-layer" aria-labelledby="logistics-title" hidden>
           <div class="layer-copy">
             <p class="eyebrow">Second layer</p>
-            <h3 id="logistics-title">Date, time, venue size, and coverage</h3>
+            <h3 id="logistics-title">Optional date/time, venue size, and coverage</h3>
           </div>
 
           <div class="scroll-nudge" aria-hidden="true">
             <span>Swipe / scroll</span>
             <b></b>
           </div>
+          <p class="setup-teardown-note"><strong>Timing note:</strong> JP needs at least 2 hours before the event for setup and at least 2 hours after the event for tear down. Choose the event start/end time if you know it; otherwise select “not sure yet.”</p>
           <div class="field-grid">
             <label>Event Type
               <select name="eventType" id="eventType">
@@ -157,14 +159,57 @@
                 <option>Other</option>
               </select>
             </label>
-            <label>Event Date
+            <label>Event Date <span class="optional-tag">Optional</span>
               <input type="date" name="eventDate" id="eventDate">
             </label>
-            <label>Start Time
-              <input type="time" name="startTime" id="startTime">
+            <label>Event Start / Time Window <span class="optional-tag">Optional</span>
+              <select name="startTime" id="startTime">
+                <option value="">Not sure yet</option>
+                <option>Morning / exact time TBD</option>
+                <option>Afternoon / exact time TBD</option>
+                <option>Evening / exact time TBD</option>
+                <option>8:00 AM</option>
+                <option>9:00 AM</option>
+                <option>10:00 AM</option>
+                <option>11:00 AM</option>
+                <option>12:00 PM</option>
+                <option>1:00 PM</option>
+                <option>2:00 PM</option>
+                <option>3:00 PM</option>
+                <option>4:00 PM</option>
+                <option>5:00 PM</option>
+                <option>6:00 PM</option>
+                <option>7:00 PM</option>
+                <option>8:00 PM</option>
+                <option>9:00 PM</option>
+                <option>10:00 PM</option>
+                <option>11:00 PM</option>
+              </select>
             </label>
-            <label>End Time
-              <input type="time" name="endTime" id="endTime">
+            <label>Event End / Time Window <span class="optional-tag">Optional</span>
+              <select name="endTime" id="endTime">
+                <option value="">Not sure yet</option>
+                <option>Morning / exact time TBD</option>
+                <option>Afternoon / exact time TBD</option>
+                <option>Evening / exact time TBD</option>
+                <option>10:00 AM</option>
+                <option>11:00 AM</option>
+                <option>12:00 PM</option>
+                <option>1:00 PM</option>
+                <option>2:00 PM</option>
+                <option>3:00 PM</option>
+                <option>4:00 PM</option>
+                <option>5:00 PM</option>
+                <option>6:00 PM</option>
+                <option>7:00 PM</option>
+                <option>8:00 PM</option>
+                <option>9:00 PM</option>
+                <option>10:00 PM</option>
+                <option>11:00 PM</option>
+                <option>12:00 AM</option>
+                <option>1:00 AM</option>
+                <option>2:00 AM</option>
+              </select>
             </label>
             <label>Venue / Location
               <input type="text" name="venue" id="venue" placeholder="Venue name or address">
