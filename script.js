@@ -400,6 +400,21 @@ const eventQuestions = {
   ]
 };
 
+const djPlayTimeQuestion = {
+  label: "How many hours will the DJ play?",
+  name: "djPlayHours",
+  type: "select",
+  options: ["Not sure yet", "Up to 2 hours", "3 hours", "4 hours", "5 hours", "6 hours", "7+ hours"]
+};
+
+function shouldAskDjPlayHours(type) {
+  return type === "Wedding" || type === "DJ / Private Party" || state.baseOptions.has("DJ setup");
+}
+
+function includesQuestionNamed(questions, name) {
+  return questions.some((question) => question.name === name);
+}
+
 const backlineAddOnQuestions = [
   {
     label: "Available drum kit options",
@@ -590,6 +605,10 @@ function renderSpecificQuestions(type) {
   specificQuestions.innerHTML = "";
   let questions = eventQuestions[type] || [];
 
+  if (shouldAskDjPlayHours(type) && !includesQuestionNamed(questions, "djPlayHours")) {
+    questions = [...questions, djPlayTimeQuestion];
+  }
+
   if (state.baseOptions.has("Backline") && type !== "Band / Backline") {
     questions = [...questions, ...backlineAddOnQuestions];
   }
@@ -669,6 +688,25 @@ function getEventHours() {
   return Math.max(1, Math.round(hours * 2) / 2);
 }
 
+function getDjPlayHours(type) {
+  const field = document.querySelector('[name="djPlayHours"]');
+  const value = field ? field.value : "";
+
+  if (value === "Up to 2 hours") return 2;
+  if (value === "3 hours") return 3;
+  if (value === "4 hours") return 4;
+  if (value === "5 hours") return 5;
+  if (value === "6 hours") return 6;
+  if (value === "7+ hours") return 7;
+
+  return type === "Wedding" ? 4 : PRICING.djMinimumHours;
+}
+
+function getDjPlayHoursLabel(type) {
+  const field = document.querySelector('[name="djPlayHours"]');
+  return field && field.value ? field.value : (type === "Wedding" ? "Not sure yet / included up to 4 hours" : "Not sure yet / 3-hour minimum");
+}
+
 function money(amount) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -698,6 +736,7 @@ const PRICING = {
   playback: 75,
   technicianDayRate: 200,
   weddingMinimum: 1000,
+  weddingIncludedDjHours: 4,
   quoteAdjustmentRate: 0.15
 };
 
@@ -780,7 +819,8 @@ function calculateTemporaryQuote() {
   const speakerSystems = document.getElementById("speakerSystems").value;
   const indoorOutdoor = document.getElementById("indoorOutdoor").value;
   const hours = getEventHours();
-  const billableDjHours = Math.max(PRICING.djMinimumHours, hours);
+  const djPlayHours = getDjPlayHours(type);
+  const billableDjHours = Math.max(PRICING.djMinimumHours, djPlayHours);
   const speakerSystemCount = requestedSpeakerSystemCount(type, venueSize, speakerSystems, indoorOutdoor);
   const requestedMics = requestedWirelessMicCount(type);
   const includedMics = includedWirelessMicCount(type);
@@ -808,16 +848,18 @@ function calculateTemporaryQuote() {
 
   if (type === "Wedding") {
     subtotal += PRICING.weddingMinimum;
-    items.push("Wedding production minimum: $1,000 (includes DJ, 1 speaker system, 1 wireless mic, party lights, and event operation)");
+    items.push("Wedding production minimum: $1,000 (includes DJ coverage up to 4 hours, 1 speaker system, 1 wireless mic, party lights, and event operation)");
     if (state.baseOptions.has("DJ setup")) {
       items.push("DJ setup selected: included in the wedding minimum, no separate DJ package charge");
     }
 
-    if (billableDjHours > PRICING.djMinimumHours) {
-      const extraHours = billableDjHours - PRICING.djMinimumHours;
+    items.push(`Wedding DJ play time: ${getDjPlayHoursLabel(type)} (included up to 4 hours)`);
+
+    if (djPlayHours > PRICING.weddingIncludedDjHours) {
+      const extraHours = djPlayHours - PRICING.weddingIncludedDjHours;
       const extraDj = extraHours * PRICING.djHourly;
       subtotal += extraDj;
-      items.push(`Wedding DJ time beyond 3 hr minimum: ${extraHours} hr x $300/hr = ${money(extraDj)}`);
+      items.push(`Additional wedding DJ play time beyond 4 hours: ${extraHours} hr x $300/hr = ${money(extraDj)}`);
     }
 
     if (speakerSystemCount > 1) {
@@ -829,6 +871,7 @@ function calculateTemporaryQuote() {
   } else if (state.baseOptions.has("DJ setup")) {
     const djTotal = billableDjHours * PRICING.djHourly;
     subtotal += djTotal;
+    items.push(`DJ play time: ${getDjPlayHoursLabel(type)}`);
     items.push(`DJ service package: ${billableDjHours} hr x $300/hr = ${money(djTotal)} (includes 1 speaker system, 1 wireless mic, party lights, and on-site technician)`);
 
     if (speakerSystemCount > 1) {
@@ -1010,7 +1053,7 @@ function updateSelectedList() {
   if (speakerSystems) summaryItems.push(`Speaker systems requested: ${speakerSystems}`);
   if (indoorOutdoor) summaryItems.push(`Coverage type: ${indoorOutdoor}`);
   if (powerAccess) summaryItems.push(`Power access: ${powerAccess}`);
-  if (state.baseOptions.has("DJ setup")) summaryItems.push(`DJ service hours priced from: ${Math.max(3, hours)} hr`);
+  if (eventType === "Wedding" || state.baseOptions.has("DJ setup")) summaryItems.push(`DJ play time: ${getDjPlayHoursLabel(eventType)}`);
 
   [...specificQuestions.querySelectorAll("label")].forEach((label) => {
     const field = label.querySelector("select");
