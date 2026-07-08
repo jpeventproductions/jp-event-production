@@ -1111,9 +1111,9 @@ function updateLayerFades() {
   const progress = clamp(-rect.top / scrollable);
 
   const opacities = [
-    1 - fadeBetween(progress, 0.20, 0.36),
-    Math.min(fadeBetween(progress, 0.24, 0.40), 1 - fadeBetween(progress, 0.58, 0.74)),
-    fadeBetween(progress, 0.64, 0.80)
+    1 - fadeBetween(progress, 0.16, 0.30),
+    Math.min(fadeBetween(progress, 0.18, 0.32), 1 - fadeBetween(progress, 0.52, 0.66)),
+    fadeBetween(progress, 0.54, 0.68)
   ];
 
   layerCards.forEach((card, index) => setLayerCardVisual(card, opacities[index] ?? 0));
