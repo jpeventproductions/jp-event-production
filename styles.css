@@ -2786,3 +2786,110 @@ textarea {
     margin: 0 14px 14px !important;
   }
 }
+
+
+/* v44: calmer mobile selections + clearer pricing pills. */
+@media (max-width: 720px) {
+  .option-card.just-selected,
+  label.field-pulse input,
+  label.field-pulse select {
+    animation: none !important;
+  }
+
+  .option-card,
+  #logisticsLayer .field-grid label,
+  #specificQuestions label {
+    transition: opacity 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease !important;
+  }
+}
+
+.pricing-pill {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+.pricing-pill[open] {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.pricing-pill summary {
+  background: #fffaf0;
+  border: 1px solid #eadbb6;
+  border-radius: 999px;
+  padding: 8px;
+}
+
+.pricing-pill[open] summary {
+  border-color: rgba(198, 155, 54, 0.62);
+  border-radius: 26px;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.055);
+}
+
+.pricing-pill-item,
+.pricing-pill-price-wrap {
+  background: rgba(247, 241, 228, 0.78);
+  border: 1px solid #eadbb6;
+  border-radius: 999px;
+  padding: 10px 12px;
+}
+
+.pricing-pill-price-wrap {
+  padding: 7px 8px 7px 12px;
+}
+
+.pricing-pill-plus {
+  background: var(--white);
+  border: 2px solid rgba(198, 155, 54, 0.7);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.08);
+  color: #6d520a;
+  flex: 0 0 30px;
+  font-weight: 950;
+}
+
+.pricing-pill p {
+  background: #fffaf0;
+  border: 1px solid #eadbb6;
+  border-radius: 18px;
+  border-top: 1px solid #eadbb6;
+  margin: 8px 8px 0 !important;
+  padding: 12px 14px;
+}
+
+@media (max-width: 720px) {
+  .pricing-pill summary {
+    border-radius: 24px;
+    padding: 10px;
+  }
+
+  .pricing-pill[open] summary {
+    border-radius: 24px;
+  }
+
+  .pricing-pill-item {
+    background: #fffaf0;
+    border: 1px solid #eadbb6;
+    border-radius: 999px;
+    padding: 11px 14px;
+  }
+
+  .pricing-pill-price-wrap {
+    background: #fffaf0;
+    border: 1px solid #eadbb6;
+    border-radius: 999px;
+    margin-top: 0;
+    padding: 9px 9px 9px 13px;
+  }
+
+  .pricing-pill-plus {
+    flex-basis: 30px;
+    height: 30px;
+    width: 30px;
+  }
+
+  .pricing-pill p {
+    margin: 8px 2px 0 !important;
+  }
+}

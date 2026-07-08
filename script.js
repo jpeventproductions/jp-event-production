@@ -529,7 +529,15 @@ function makeField(question) {
 }
 
 function pulseElement(element) {
+  if (!element) return;
+
+  // Mobile horizontal cards were shaking because the tap pulse animation
+  // fought against the scroll-wheel zoom transform. Keep the selection
+  // instant on small screens and let the selected color carry the feedback.
+  const isSmallScreen = window.matchMedia("(max-width: 720px)").matches;
   element.classList.remove("field-pulse", "just-selected");
+  if (isSmallScreen) return;
+
   void element.offsetWidth;
   element.classList.add(element.classList.contains("option-card") ? "just-selected" : "field-pulse");
 }
