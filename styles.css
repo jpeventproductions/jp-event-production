@@ -1972,3 +1972,130 @@ textarea {
     animation: none;
   }
 }
+
+
+/* v34: stop first-layer option row from jumping after a selection. */
+.option-grid,
+#baseOptions {
+  overflow-anchor: none;
+  scroll-behavior: auto !important;
+  scroll-snap-type: none !important;
+}
+
+.option-card {
+  scroll-snap-align: start !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* v35: transparent pricing guide + pricing math cleanup. */
+.pricing-disclosure {
+  border: 1px solid #eadbb6;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.74);
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.pricing-disclosure summary {
+  cursor: pointer;
+  font-weight: 950;
+  list-style: none;
+  padding: 16px 18px;
+  color: var(--ink);
+}
+
+.pricing-disclosure summary::-webkit-details-marker {
+  display: none;
+}
+
+.pricing-disclosure summary::after {
+  content: "+";
+  float: right;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.pricing-disclosure[open] summary::after {
+  content: "–";
+}
+
+.pricing-guide-card {
+  border-top: 1px solid #eadbb6;
+  display: grid;
+  gap: 14px;
+  padding: 0 18px 18px;
+}
+
+.pricing-guide-card p {
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.pricing-guide-card table {
+  border-collapse: collapse;
+  border-radius: 18px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.pricing-guide-card th,
+.pricing-guide-card td {
+  border: 1px solid #eadbb6;
+  padding: 12px 13px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.pricing-guide-card th {
+  background: var(--deep);
+  color: var(--white);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.pricing-guide-card td {
+  background: #fffaf0;
+  color: var(--ink);
+  line-height: 1.42;
+}
+
+.pricing-guide-card td:nth-child(2) {
+  color: #6d520a;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.pricing-footnote {
+  color: #6d520a !important;
+  font-weight: 950;
+}
+
+/* v35: first layer should not snap back after click; movement should come from user scroll only. */
+.option-grid,
+#baseOptions {
+  overflow-anchor: none !important;
+  scroll-behavior: auto !important;
+  scroll-snap-type: none !important;
+  scrollbar-gutter: stable;
+}
+
+.option-card {
+  scroll-snap-align: start !important;
+  scroll-margin-inline: 0 !important;
+}
+
+.option-card:focus {
+  outline: 0;
+}
+
+@media (max-width: 720px) {
+  .pricing-guide-card {
+    overflow-x: auto;
+  }
+
+  .pricing-guide-card table {
+    min-width: 760px;
+  }
+}
