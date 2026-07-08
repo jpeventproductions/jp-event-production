@@ -548,6 +548,12 @@ nav a {
   padding: 9px 14px;
 }
 
+#logisticsLayer .option-wheel-hint,
+#specificLayer .option-wheel-hint {
+  margin-top: -4px;
+  margin-bottom: 14px;
+}
+
 .scroll-nudge {
   display: none;
 }
@@ -1881,3 +1887,88 @@ textarea {
 
 
 /* v30: Layer 1/2/3 intro cards removed. Hero now moves directly into Build Your Own Event. */
+
+
+/* v32: suggested setup/package cards removed from quote preview. */
+.quote-package-area,
+.active-package-card,
+.package-ideas,
+.package-idea-card {
+  display: none !important;
+}
+
+/* v32: scroll wheels should only move from actual user scrolling. */
+.option-grid,
+#logisticsLayer .field-grid,
+#specificQuestions {
+  scroll-snap-type: none !important;
+  scroll-behavior: auto;
+}
+
+.option-card,
+#logisticsLayer .field-grid label,
+#specificQuestions label {
+  will-change: transform, opacity;
+}
+
+/* Keep the next card visibly peeking in portrait mode. */
+@media (max-width: 720px) {
+  #logisticsLayer .field-grid,
+  #specificQuestions,
+  .option-grid {
+    padding-right: 24vw !important;
+  }
+
+  .option-card {
+    flex-basis: min(68vw, 288px) !important;
+  }
+
+  #logisticsLayer .field-grid label,
+  #specificQuestions label {
+    flex-basis: min(72vw, 310px) !important;
+  }
+}
+
+
+/* v33: quote language + horizontal-scroll guidance updates. */
+#logisticsLayer .option-wheel-hint,
+#specificLayer .option-wheel-hint {
+  gap: 12px;
+  padding-right: 16px;
+}
+
+#logisticsLayer .option-wheel-hint::after,
+#specificLayer .option-wheel-hint::after {
+  align-items: center;
+  animation: horizontalHintPulse 1.05s ease-in-out infinite;
+  background: var(--deep);
+  border-radius: 999px;
+  color: var(--white);
+  content: "→";
+  display: inline-flex;
+  font-size: 1rem;
+  font-weight: 950;
+  height: 28px;
+  justify-content: center;
+  line-height: 1;
+  margin-left: 2px;
+  min-width: 28px;
+}
+
+@keyframes horizontalHintPulse {
+  0%, 100% {
+    opacity: 0.64;
+    transform: translateX(0) scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(8px) scale(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #logisticsLayer .option-wheel-hint::after,
+  #specificLayer .option-wheel-hint::after {
+    animation: none;
+  }
+}

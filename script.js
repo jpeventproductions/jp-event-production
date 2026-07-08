@@ -535,8 +535,12 @@ function openChoiceDialog(field) {
     button.textContent = option.textContent;
     button.classList.toggle("is-selected", field.value === option.value);
     button.addEventListener("click", () => {
+      const preservedScrollPositions = rememberHorizontalScrollPositions();
       activeChoiceField.value = option.value;
       activeChoiceField.dispatchEvent(new Event("change", { bubbles: true }));
+      activeChoiceField.blur();
+      restoreHorizontalScrollPositions(preservedScrollPositions);
+      requestAnimationFrame(() => restoreHorizontalScrollPositions(preservedScrollPositions));
 
       if (typeof choiceDialog.close === "function") {
         choiceDialog.close();
@@ -819,32 +823,7 @@ function getBestPackage() {
 }
 
 function renderPackageRecommendations() {
-  const best = getBestPackage();
-  const sortedPackages = [...packageCatalog].sort((a, b) => scorePackage(b) - scorePackage(a));
-
-  activePackageCard.innerHTML = `
-    <img src="${best.image}" alt="">
-    <div>
-      <strong>${best.name}</strong>
-      <p>${best.tagline}</p>
-    </div>
-  `;
-
-  packageIdeas.innerHTML = "";
-  sortedPackages.slice(0, 6).forEach((pkg) => {
-    const card = document.createElement("article");
-    card.className = "package-idea-card";
-    card.innerHTML = `
-      <img src="${pkg.image}" alt="">
-      <div>
-        <strong>${pkg.name}</strong>
-        <span>${pkg.services.join(" + ")}</span>
-      </div>
-    `;
-    packageIdeas.appendChild(card);
-  });
-
-  requestAnimationFrame(refreshPinwheels);
+  // Suggested setup/package cards removed from the quote view.
 }
 
 function updateSelectedList() {
@@ -909,38 +888,36 @@ function updateRecommendation() {
   minimumNote.textContent = "";
 
   if (!state.baseOptions.size) {
-    recommendationTitle.textContent = "Start with your base layer.";
-    recommendationCopy.textContent = "Choose sound, microphones, DJ, backline, lighting, or technician support first.";
+    recommendationTitle.textContent = "Start your quote above.";
+    recommendationCopy.textContent = "Click one or more service boxes to begin. Then scroll sideways through the questions so JP can price the room correctly.";
     return;
   }
 
   if (!type || !systems || !size) {
-    recommendationTitle.textContent = "Base layer selected.";
-    recommendationCopy.textContent = "Add the event type, venue size, and speaker-system count so JP can quote the right coverage.";
+    recommendationTitle.textContent = "Keep building your quote.";
+    recommendationCopy.textContent = "Add the event type, venue size, and speaker-system count next. Exact date and time can stay TBD.";
     return;
   }
+
+  recommendationTitle.textContent = "Quote details captured.";
+  recommendationCopy.textContent = "JP will review your selected services, room details, timing, and contact info before confirming the final quote.";
 
   if (type === "Wedding") {
-    recommendationTitle.textContent = "Wedding production build";
-    recommendationCopy.textContent = "This should be quoted around coverage zones first: ceremony, reception, outdoor areas, overflow, and the number of speaker systems required.";
-    minimumNote.textContent = "Wedding builds start at $1,000.";
-    return;
+    minimumNote.textContent = "Wedding events start at $1,000.";
   }
+}
 
-  if (type === "Band / Backline") {
-    recommendationTitle.textContent = "Band and backline build";
-    recommendationCopy.textContent = "This request should be reviewed against the input list, rider, kit preference, snare needs, cymbal needs, and monitor requirements.";
-    return;
-  }
+function rememberHorizontalScrollPositions() {
+  return [baseOptionsScroller, document.querySelector("#logisticsLayer .field-grid"), specificQuestions]
+    .filter(Boolean)
+    .map((scroller) => [scroller, scroller.scrollLeft]);
+}
 
-  if (type === "DJ / Private Party") {
-    recommendationTitle.textContent = "DJ event build";
-    recommendationCopy.textContent = "This build should center on main PA coverage, subwoofer support, lighting, clean/explicit music needs, and MC announcements.";
-    return;
-  }
-
-  recommendationTitle.textContent = `${type} event build`;
-  recommendationCopy.textContent = "This build should be quoted from the room size, speaking needs, music playback, technician support, and number of coverage zones.";
+function restoreHorizontalScrollPositions(positions) {
+  positions.forEach(([scroller, left]) => {
+    if (!scroller) return;
+    scroller.scrollLeft = left;
+  });
 }
 
 function updateStepText(completion) {
@@ -968,6 +945,7 @@ function updateStepText(completion) {
 }
 
 function updateProgress() {
+  const preservedScrollPositions = rememberHorizontalScrollPositions();
   const completion = getCompletion();
   progressFill.style.width = `${completion}%`;
   progressText.textContent = `${completion}% complete`;
@@ -975,9 +953,11 @@ function updateProgress() {
   updateSelectedList();
   updateRecommendation();
   updateQuotePreview();
-  renderPackageRecommendations();
-  requestAnimationFrame(refreshPinwheels);
-  queueLayerScrollHints();
+  restoreHorizontalScrollPositions(preservedScrollPositions);
+  requestAnimationFrame(() => {
+    restoreHorizontalScrollPositions(preservedScrollPositions);
+    refreshPinwheels();
+  });
 
   if (state.baseOptions.size > 0) {
     revealLayer(logisticsLayer);
@@ -985,6 +965,7 @@ function updateProgress() {
     hideLayer(logisticsLayer);
     hideLayer(specificLayer);
     hideLayer(summaryLayer);
+    restoreHorizontalScrollPositions(preservedScrollPositions);
     return;
   }
 
@@ -998,6 +979,7 @@ function updateProgress() {
 baseButtons.forEach((button) => {
   button.addEventListener("click", () => {
     const option = button.dataset.option;
+    const preservedScrollPositions = rememberHorizontalScrollPositions();
 
     if (state.baseOptions.has(option)) {
       state.baseOptions.delete(option);
@@ -1012,7 +994,11 @@ baseButtons.forEach((button) => {
       renderSpecificQuestions(eventTypeField.value);
     }
 
+    button.blur();
     updateProgress();
+    restoreHorizontalScrollPositions(preservedScrollPositions);
+    requestAnimationFrame(() => restoreHorizontalScrollPositions(preservedScrollPositions));
+    button.blur();
   });
 });
 
@@ -1037,26 +1023,23 @@ function applyPinwheel(scroller, selector) {
   const items = [...scroller.querySelectorAll(selector)];
   if (!items.length) return;
 
-  if (window.matchMedia("(max-width: 720px)").matches) {
-    items.forEach((item) => {
-      item.style.transform = "";
-      item.style.opacity = "";
-    });
-    return;
-  }
-
   const center = scroller.getBoundingClientRect().left + scroller.clientWidth / 2;
+  const isSmallScreen = window.matchMedia("(max-width: 720px)").matches;
 
   items.forEach((item) => {
     const rect = item.getBoundingClientRect();
     const itemCenter = rect.left + rect.width / 2;
     const distance = (itemCenter - center) / Math.max(scroller.clientWidth / 2, 1);
     const clamped = Math.max(-1, Math.min(1, distance));
-    const scale = 1 - Math.abs(clamped) * 0.11;
-    const lift = Math.abs(clamped) * 12;
-    const rotate = clamped * -11;
+    const closeness = 1 - Math.abs(clamped);
+
+    const scale = isSmallScreen ? 0.92 + closeness * 0.14 : 0.88 + closeness * 0.20;
+    const lift = isSmallScreen ? 0 : Math.abs(clamped) * 8;
+    const rotate = isSmallScreen ? 0 : clamped * -6;
+    const opacity = isSmallScreen ? 0.78 + closeness * 0.22 : 0.72 + closeness * 0.28;
+
     item.style.transform = `perspective(900px) rotateY(${rotate}deg) translateY(${lift}px) scale(${scale})`;
-    item.style.opacity = `${1 - Math.abs(clamped) * 0.28}`;
+    item.style.opacity = `${opacity}`;
   });
 }
 
@@ -1064,11 +1047,10 @@ function refreshPinwheels() {
   applyPinwheel(baseOptionsScroller, ".option-card");
   applyPinwheel(document.querySelector("#logisticsLayer .field-grid"), "label");
   applyPinwheel(specificQuestions, "label");
-  applyPinwheel(packageIdeas, ".package-idea-card");
 }
 
-[baseOptionsScroller, document.querySelector("#logisticsLayer .field-grid"), specificQuestions, packageIdeas].forEach((scroller) => {
-  if (!scroller) return;
+const horizontalScrollers = [baseOptionsScroller, document.querySelector("#logisticsLayer .field-grid"), specificQuestions].filter(Boolean);
+horizontalScrollers.forEach((scroller) => {
   scroller.addEventListener("scroll", () => requestAnimationFrame(refreshPinwheels));
   scroller.addEventListener("wheel", (event) => {
     if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
@@ -1081,40 +1063,6 @@ function refreshPinwheels() {
 });
 
 
-
-const scrollHintState = new WeakMap();
-
-function hasHorizontalOverflow(scroller) {
-  return scroller && scroller.scrollWidth > scroller.clientWidth + 12;
-}
-
-function previewHorizontalScroll(scroller, key = "default") {
-  if (!hasHorizontalOverflow(scroller)) return;
-  if (scrollHintState.get(scroller) === key) return;
-  scrollHintState.set(scroller, key);
-
-  const startLeft = scroller.scrollLeft;
-  const maxShift = Math.min(68, Math.max(36, scroller.clientWidth * 0.14));
-  const targetLeft = Math.min(scroller.scrollWidth - scroller.clientWidth, startLeft + maxShift);
-  if (targetLeft <= startLeft + 4) return;
-
-  scroller.classList.add("scroll-preview");
-  window.setTimeout(() => {
-    if (state.baseOptions.size) return;
-    scroller.scrollTo({ left: targetLeft, behavior: "smooth" });
-  }, 180);
-  window.setTimeout(() => {
-    if (state.baseOptions.size) return;
-    scroller.scrollTo({ left: startLeft, behavior: "smooth" });
-  }, 850);
-  window.setTimeout(() => scroller.classList.remove("scroll-preview"), 1450);
-}
-
-function queueLayerScrollHints() {
-  if (!state.baseOptions.size) {
-    window.setTimeout(() => previewHorizontalScroll(baseOptionsScroller, "base-empty"), 500);
-  }
-}
 
 document.querySelectorAll("#eventBuilder select").forEach(enhanceChoiceSelect);
 window.addEventListener("resize", () => requestAnimationFrame(refreshPinwheels));
@@ -1445,4 +1393,3 @@ document.getElementById("eventBuilder").addEventListener("submit", (event) => {
 });
 
 updateProgress();
-window.setTimeout(queueLayerScrollHints, 700);
