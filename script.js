@@ -743,7 +743,7 @@ const PRICING = {
   additionalWirelessMicrophone: 30,
   includedWirelessMicsPerPackage: 1,
   subwoofer: 200,
-  djBaseRate: 300,
+  djBaseRate: 750,
   djIncludedHours: 4,
   djExtraHourlyAfterFour: 100,
   djMinimumHours: 3,
@@ -762,12 +762,19 @@ function selectedOnly(...options) {
   return options.every((option) => state.baseOptions.has(option));
 }
 
+function isStandaloneWirelessMicQuote() {
+  return selectedOnly("Wireless microphones");
+}
+
 function requestedSpeakerSystemCount(type, venueSize, speakerSystems, indoorOutdoor) {
   let count = 0;
+  const hasCoverageBase = state.baseOptions.has("Speaker system") || state.baseOptions.has("DJ setup") || type === "Wedding";
 
-  if (state.baseOptions.has("Speaker system") || state.baseOptions.has("DJ setup") || type === "Wedding") {
-    count = 1;
+  if (!hasCoverageBase) {
+    return 0;
   }
+
+  count = 1;
 
   if (speakerSystems.startsWith("1 main")) count = Math.max(count, 1);
   if (speakerSystems.startsWith("2 systems")) count = Math.max(count, 2);
@@ -843,6 +850,7 @@ function calculateTemporaryQuote() {
   const includedMics = includedWirelessMicCount(type);
   const additionalMics = Math.max(0, requestedMics - includedMics);
   const liveBandCoverageSelected = state.baseOptions.has("Live band coverage");
+  const standaloneWirelessOnly = isStandaloneWirelessMicQuote();
   let subtotal = 0;
 
   if (state.baseOptions.size === 0) {
@@ -891,9 +899,9 @@ function calculateTemporaryQuote() {
     subtotal += djTotal;
     items.push(`DJ play time: ${getDjPlayHoursLabel(type)}`);
     if (extraDjHours > 0) {
-      items.push(`DJ service package: $300 up to 4 hours + ${extraDjHours} extra hr x $100/hr = ${money(djTotal)} (includes 1 speaker system, 1 wireless mic, party lights, and on-site technician)`);
+      items.push(`DJ service package: $750 starting, up to 4 hours + ${extraDjHours} extra hr x $100/hr = ${money(djTotal)} (includes 1 speaker system, 1 wireless mic, party lights, and on-site technician)`);
     } else {
-      items.push(`DJ service package: $300 up to 4 hours (includes 1 speaker system, 1 wireless mic, party lights, and on-site technician)`);
+      items.push(`DJ service package: $750 starting, up to 4 hours (includes 1 speaker system, 1 wireless mic, party lights, and on-site technician)`);
     }
 
     if (speakerSystemCount > 1) {
@@ -979,17 +987,17 @@ function calculateTemporaryQuote() {
     items.push("200+ guests: JP should manually review final coverage before confirming price.");
   }
 
-  if (subtotal > 0 && subtotal < PRICING.minimumQuote) {
+  if (!standaloneWirelessOnly && subtotal > 0 && subtotal < PRICING.minimumQuote) {
     subtotal = PRICING.minimumQuote;
     items.push("Minimum quote applied: $450");
   }
 
   if (subtotal === 0) {
-    subtotal = PRICING.minimumQuote;
-    items.push("Minimum quote applied: $450");
+    subtotal = standaloneWirelessOnly ? 0 : PRICING.minimumQuote;
+    if (!standaloneWirelessOnly) items.push("Minimum quote applied: $450");
   }
 
-  const internalProtection = Math.round(subtotal * PRICING.internalQuoteProtectionRate);
+  const internalProtection = standaloneWirelessOnly ? 0 : Math.round(subtotal * PRICING.internalQuoteProtectionRate);
   if (internalProtection > 0) {
     subtotal += internalProtection;
   }
@@ -1273,6 +1281,15 @@ function refreshPinwheels() {
   applyPinwheel(baseOptionsScroller, ".option-card");
   applyPinwheel(document.querySelector("#logisticsLayer .field-grid"), "label");
   applyPinwheel(specificQuestions, "label");
+  updateVisibleScrollBars();
+}
+
+function updateVisibleScrollBars() {
+  [baseOptionsScroller, document.querySelector("#logisticsLayer .field-grid"), specificQuestions]
+    .filter(Boolean)
+    .forEach((scroller) => {
+      if (typeof scroller._updateVisibleScrollbar === "function") scroller._updateVisibleScrollbar();
+    });
 }
 
 let pinwheelFrame = null;
@@ -1653,6 +1670,7 @@ function attachVisibleScrollBar(scroller) {
     bar.classList.toggle("is-disabled", maxScroll <= 2);
   }
 
+  scroller._updateVisibleScrollbar = updateThumb;
   scroller.addEventListener("scroll", updateThumb, { passive: true });
   window.addEventListener("resize", updateThumb);
 
@@ -1697,9 +1715,9 @@ function attachVisibleScrollBar(scroller) {
 }
 
 function initVisibleScrollBars() {
-  // Keep the chooser stable by using the browser's native horizontal scrollbar.
-  // The former custom bar duplicated scroll state and could jitter after choices.
-  return;
+  [baseOptionsScroller, document.querySelector("#logisticsLayer .field-grid"), specificQuestions]
+    .filter(Boolean)
+    .forEach(attachVisibleScrollBar);
 }
 
 const pricingShortcut = document.querySelector(".pricing-shortcut");
