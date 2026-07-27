@@ -1443,7 +1443,7 @@ if (gallerySlides.length) {
   });
 }
 
-const jpSubmissionInbox = "jpeventproduction@gmail.com";
+const jpSubmissionInbox = "JPeventproductions@gmail.com";
 
 function cleanValue(value) {
   return String(value || "").trim();
@@ -1535,7 +1535,7 @@ function formatEmailBody(request) {
   const quoteItems = Array.isArray(quote.items) ? quote.items : [];
 
   const lines = [
-    "JP EVENT PRODUCTION — BUILD REQUEST",
+    "JP EVENT PRODUCTIONS — BUILD REQUEST",
     "Live Sound Audio, DJ and Backline",
     "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
     "",
@@ -1592,7 +1592,7 @@ function formatEmailBody(request) {
     "3. Send the official quote and booking agreement.",
     "",
     "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    "Generated from the JP Event Production website."
+    "Generated from the JP Event Productions website."
   ];
 
   return lines.join("\n");
@@ -1626,7 +1626,7 @@ function saveRequestLocally(request) {
 
 function markEmailSubmissionComplete() {
   recommendationTitle.textContent = "Build request email prepared.";
-  recommendationCopy.textContent = "Your email app should open with a complete JP Event Production request already addressed to jpeventproduction@gmail.com. Please press Send so JP receives the request.";
+  recommendationCopy.textContent = "Your email app should open with a complete JP Event Productions request already addressed to JPeventproductions@gmail.com. Please press Send so JP receives the request.";
   minimumNote.textContent = "The request is also saved in this browser as a backup.";
 }
 
@@ -1733,3 +1733,45 @@ if (pricingShortcut && transparentPricingGuide) {
 initVisibleScrollBars();
 
 updateProgress();
+
+
+// v50: Mobile-safe parallax for the portfolio section.
+(() => {
+  const portfolioBand = document.querySelector(".parallax-band");
+  if (!portfolioBand) return;
+
+  const mobileQuery = window.matchMedia("(max-width: 720px)");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let ticking = false;
+
+  function updateMobileParallax() {
+    ticking = false;
+
+    if (!mobileQuery.matches || reducedMotion.matches) {
+      portfolioBand.style.setProperty("--mobile-parallax-y", "0px");
+      return;
+    }
+
+    const rect = portfolioBand.getBoundingClientRect();
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+    if (rect.bottom < 0 || rect.top > viewportHeight) return;
+
+    const travel = viewportHeight + rect.height;
+    const progress = Math.max(0, Math.min(1, (viewportHeight - rect.top) / Math.max(travel, 1)));
+    const offset = (progress - 0.5) * 72;
+    portfolioBand.style.setProperty("--mobile-parallax-y", `${offset.toFixed(2)}px`);
+  }
+
+  function requestMobileParallaxUpdate() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(updateMobileParallax);
+  }
+
+  window.addEventListener("scroll", requestMobileParallaxUpdate, { passive: true });
+  window.addEventListener("resize", requestMobileParallaxUpdate, { passive: true });
+  mobileQuery.addEventListener?.("change", requestMobileParallaxUpdate);
+  reducedMotion.addEventListener?.("change", requestMobileParallaxUpdate);
+  requestMobileParallaxUpdate();
+})();

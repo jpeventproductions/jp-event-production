@@ -2957,3 +2957,40 @@ textarea {
     margin-bottom: 16px;
   }
 }
+
+
+/* v50 mobile parallax + JP Event Productions branding update */
+@media (max-width: 720px) {
+  .parallax-band {
+    --mobile-parallax-y: 0px;
+    background: #090909;
+    background-attachment: scroll;
+    isolation: isolate;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .parallax-band::before {
+    background:
+      linear-gradient(rgba(0, 0, 0, 0.66), rgba(0, 0, 0, 0.72)),
+      url("https://images.unsplash.com/photo-1521334726092-b509a19597c6?auto=format&fit=crop&w=1800&q=80") center / cover no-repeat;
+    content: "";
+    inset: -14% 0;
+    pointer-events: none;
+    position: absolute;
+    transform: translate3d(0, var(--mobile-parallax-y), 0) scale(1.05);
+    will-change: transform;
+    z-index: -1;
+  }
+
+  .parallax-band > * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parallax-band::before {
+    transform: none;
+  }
+}
