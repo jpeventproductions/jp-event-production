@@ -282,12 +282,6 @@ const eventQuestions = {
       options: ["1", "2", "3-4", "5+", "Not sure"]
     },
     {
-      label: "Lavalier microphone needed?",
-      name: "lavalier",
-      type: "select",
-      options: ["Yes", "No", "Maybe"]
-    },
-    {
       label: "Music playback",
       name: "corporatePlayback",
       type: "select",
@@ -405,6 +399,13 @@ const djPlayTimeQuestion = {
   name: "djPlayHours",
   type: "select",
   options: ["Not sure yet", "Up to 2 hours", "3 hours", "4 hours", "5 hours", "6 hours", "7+ hours"]
+};
+
+const lapelMicQuestion = {
+  label: "How many lapel microphones are needed?",
+  name: "lapelMicCount",
+  type: "select",
+  options: ["None", "1 lapel mic", "2 lapel mics", "3-4 lapel mics", "5+ lapel mics", "Not sure yet"]
 };
 
 function shouldAskDjPlayHours(type) {
@@ -620,7 +621,16 @@ function renderSpecificQuestions(type) {
   let questions = eventQuestions[type] || [];
 
   if (shouldAskDjPlayHours(type) && !includesQuestionNamed(questions, "djPlayHours")) {
-    questions = [...questions, djPlayTimeQuestion];
+    if (type === "Wedding") {
+      questions = [questions[0], djPlayTimeQuestion, ...questions.slice(1)];
+    } else {
+      questions = [questions[0], djPlayTimeQuestion, ...questions.slice(1)];
+    }
+  }
+
+  if (!includesQuestionNamed(questions, "lapelMicCount")) {
+    const insertAt = type === "Wedding" ? 2 : Math.min(2, questions.length);
+    questions = [...questions.slice(0, insertAt), lapelMicQuestion, ...questions.slice(insertAt)];
   }
 
   if (state.baseOptions.has("Backline") && type !== "Band / Backline") {
@@ -741,6 +751,8 @@ const PRICING = {
   additionalSpeakerSystem: 300,
   standaloneWirelessMicrophone: 75,
   additionalWirelessMicrophone: 30,
+  standaloneLapelMicrophone: 50,
+  pairedLapelMicrophone: 40,
   includedWirelessMicsPerPackage: 1,
   subwoofer: 200,
   djBaseRate: 750,
@@ -795,6 +807,17 @@ function micCountFromValue(value) {
   return match ? Number(match[0]) : 0;
 }
 
+function requestedLapelMicCount() {
+  const field = document.querySelector('[name="lapelMicCount"]');
+  let count = field ? micCountFromValue(field.value) : 0;
+  if (state.baseOptions.has("Lapel microphones")) count = Math.max(1, count);
+  return count;
+}
+
+function isStandaloneLapelMicQuote(type) {
+  return type !== "Wedding" && selectedOnly("Lapel microphones");
+}
+
 function requestedWirelessMicCount(type) {
   const specificNames = [
     "weddingMics",
@@ -847,10 +870,12 @@ function calculateTemporaryQuote() {
   const billableDjHours = Math.max(PRICING.djMinimumHours, djPlayHours);
   const speakerSystemCount = requestedSpeakerSystemCount(type, venueSize, speakerSystems, indoorOutdoor);
   const requestedMics = requestedWirelessMicCount(type);
+  const requestedLapelMics = requestedLapelMicCount();
   const includedMics = includedWirelessMicCount(type);
   const additionalMics = Math.max(0, requestedMics - includedMics);
   const liveBandCoverageSelected = state.baseOptions.has("Live band coverage");
   const standaloneWirelessOnly = isStandaloneWirelessMicQuote();
+  const standaloneLapelOnly = isStandaloneLapelMicQuote(type);
   let subtotal = 0;
 
   if (state.baseOptions.size === 0) {
@@ -936,6 +961,15 @@ function calculateTemporaryQuote() {
     items.push(`Wireless microphones alone: ${standaloneMics} x $75 flat = ${money(micTotal)}`);
   }
 
+  if (requestedLapelMics > 0) {
+    const lapelRate = isStandaloneLapelMicQuote(type)
+      ? PRICING.standaloneLapelMicrophone
+      : PRICING.pairedLapelMicrophone;
+    const lapelTotal = requestedLapelMics * lapelRate;
+    subtotal += lapelTotal;
+    items.push(`Lapel microphones: ${requestedLapelMics} x ${money(lapelRate)} flat = ${money(lapelTotal)}`);
+  }
+
   if (state.baseOptions.has("Subwoofer support")) {
     subtotal += PRICING.subwoofer;
     items.push("Subwoofer support: $200 flat");
@@ -987,7 +1021,7 @@ function calculateTemporaryQuote() {
     items.push("200+ guests: JP should manually review final coverage before confirming price.");
   }
 
-  if (!standaloneWirelessOnly && subtotal > 0 && subtotal < PRICING.minimumQuote) {
+  if (!standaloneWirelessOnly && !standaloneLapelOnly && subtotal > 0 && subtotal < PRICING.minimumQuote) {
     subtotal = PRICING.minimumQuote;
     items.push("Minimum quote applied: $450");
   }
@@ -1535,20 +1569,20 @@ function formatEmailBody(request) {
   const quoteItems = Array.isArray(quote.items) ? quote.items : [];
 
   const lines = [
-    "JP EVENT PRODUCTIONS — BUILD REQUEST",
+    "🎛️ JP EVENT PRODUCTIONS — BUILD REQUEST",
     "Live Sound Audio, DJ and Backline",
     "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
     "",
-    "NEW WEBSITE SUBMISSION",
+    "📩 NEW WEBSITE SUBMISSION",
     detailLine("Submitted", new Date(request.createdAt).toLocaleString()),
     detailLine("Status", request.status),
     "",
-    "CLIENT CONTACT",
+    "👤 CLIENT CONTACT",
     detailLine("Name", request.contact.name),
     detailLine("Phone", request.contact.phone),
     detailLine("Email", request.contact.email),
     "",
-    "EVENT SNAPSHOT",
+    "📅 EVENT SNAPSHOT",
     detailLine("Event type", fields.eventType),
     detailLine("Event date", prettyDateTime(fields.eventDate)),
     detailLine("Start time", prettyDateTime(fields.startTime)),
@@ -1560,23 +1594,23 @@ function formatEmailBody(request) {
     detailLine("Power access", fields.powerAccess),
     detailLine("Speaker systems", fields.speakerSystems),
     "",
-    "PRODUCTION LAYERS SELECTED",
+    "🔊 PRODUCTION LAYERS SELECTED",
     request.baseOptions.length ? request.baseOptions.map((item) => `• ${item}`).join("\n") : "No production layers selected.",
     "",
-    "TEMPORARY QUOTE RANGE",
+    "💰 TEMPORARY QUOTE RANGE",
     quoteDisplayText(quote),
     quote.note || "Final pricing should be confirmed after reviewing the full event details.",
     "",
-    "QUOTE BREAKDOWN",
+    "🧾 QUOTE BREAKDOWN",
     quoteItems.length ? quoteItems.map((item) => `• ${item}`).join("\n") : "No quote breakdown available.",
     "",
-    "SETUP / TEAR-DOWN EXPECTATION",
+    "⏱️ SETUP / TEAR-DOWN EXPECTATION",
     "Please plan for at least 2 hours before the event start time for setup and at least 2 hours after the event end time for tear-down.",
     "",
-    "EVENT-SPECIFIC ANSWERS",
+    "🎤 EVENT-SPECIFIC ANSWERS",
     specificAnswers.length ? specificAnswers.map((item) => `• ${item.label}: ${item.value}`).join("\n") : "No event-specific answers provided yet.",
     "",
-    "OPTIONAL DETAILS",
+    "📝 OPTIONAL DETAILS",
     detailLine("Alternate contact name", optional.clientName),
     detailLine("Alternate contact email", optional.clientEmail),
     detailLine("Alternate contact phone", optional.clientPhone),
@@ -1586,7 +1620,7 @@ function formatEmailBody(request) {
     "Additional notes:",
     optional.extraNotes || "None provided.",
     "",
-    "STAFF NEXT STEPS",
+    "✅ STAFF NEXT STEPS",
     "1. Review event scope, venue needs, timing, and coverage zones.",
     "2. Confirm any unclear details with the client.",
     "3. Send the official quote and booking agreement.",
