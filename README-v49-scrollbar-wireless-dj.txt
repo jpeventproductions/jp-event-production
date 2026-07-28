@@ -6,3 +6,6 @@ Updates:
 - Wireless microphones booked alone remain priced at $75 each.
 - DJ service package pricing now starts at $750 in the pricing guide and quote math, while retaining the +$100/hr rule after 4 DJ play hours.
 - Existing v48 stable chooser behavior, Live Band Coverage $250, and email submit behavior remain in place.
+
+## v53 update
+DJ Setup includes up to 4 hours. Event coverage beyond 4 hours adds $100 per hour, based on the longer of the selected DJ play time or entered event window.

@@ -52,3 +52,6 @@ V26 updates: pinned fade layers with shorter scroll distance, removed image-edge
 
 
 v30 update: removed the Layer 1 / Layer 2 / Layer 3 intro card section so the page moves from the hero directly into Build Your Own Event.
+
+## v53 update
+DJ Setup includes up to 4 hours. Event coverage beyond 4 hours adds $100 per hour, based on the longer of the selected DJ play time or entered event window.

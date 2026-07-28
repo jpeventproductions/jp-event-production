@@ -5,3 +5,6 @@ JP Event Productions v52
 - Prices standalone MC support at $75/hr using the event time window.
 - Adds all three items to the transparent pricing guide.
 - When Wireless Mics or Lapel Mics is the only Layer 1 selection, its quantity question appears first in Layer 2.
+
+## v53 update
+DJ Setup includes up to 4 hours. Event coverage beyond 4 hours adds $100 per hour, based on the longer of the selected DJ play time or entered event window.

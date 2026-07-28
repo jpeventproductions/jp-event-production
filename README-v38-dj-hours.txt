@@ -7,3 +7,6 @@ Updates:
 - Additional wedding DJ playing time beyond 4 hours adds $300/hr.
 - Non-wedding DJ quotes now use the DJ play-hours answer with a 3-hour minimum.
 - Transparent pricing guide updated to explain the DJ play-hours and wedding included-hours rules.
+
+## v53 update
+DJ Setup includes up to 4 hours. Event coverage beyond 4 hours adds $100 per hour, based on the longer of the selected DJ play time or entered event window.

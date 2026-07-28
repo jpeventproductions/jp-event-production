@@ -987,10 +987,14 @@ function calculateTemporaryQuote() {
       items.push(`Additional speaker system / zone support: ${extraSystems} x $300 = ${money(extraSystemCost)}`);
     }
   } else if (state.baseOptions.has("DJ setup")) {
-    const extraDjHours = Math.max(0, djPlayHours - PRICING.djIncludedHours);
+    // DJ Setup includes up to four hours. Use whichever is longer: the
+    // selected DJ play time or the event window entered in Layer 2.
+    const chargedDjHours = Math.max(djPlayHours, hours);
+    const extraDjHours = Math.max(0, chargedDjHours - PRICING.djIncludedHours);
     const djTotal = PRICING.djBaseRate + extraDjHours * PRICING.djExtraHourlyAfterFour;
     subtotal += djTotal;
     items.push(`DJ play time: ${getDjPlayHoursLabel(type)}`);
+    items.push(`Event coverage window used for DJ pricing: ${chargedDjHours} hr`);
     if (extraDjHours > 0) {
       items.push(`DJ service package: $750 starting, up to 4 hours + ${extraDjHours} extra hr x $100/hr = ${money(djTotal)} (includes 1 speaker system, 1 wireless mic, party lights, and on-site technician)`);
     } else {

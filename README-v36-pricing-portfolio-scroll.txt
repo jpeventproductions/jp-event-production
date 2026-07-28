@@ -8,3 +8,6 @@ Updates:
 - Transparent pricing guide now opens full width inside the quote card and table can scroll horizontally so the included-items column is visible.
 - Open Optional Details and Submit buttons no longer stretch when pricing guide is open.
 - Strengthened Layer 2 horizontal scroll position lock after choices.
+
+## v53 update
+DJ Setup includes up to 4 hours. Event coverage beyond 4 hours adds $100 per hour, based on the longer of the selected DJ play time or entered event window.
