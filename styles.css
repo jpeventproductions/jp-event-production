@@ -2994,3 +2994,7 @@ textarea {
     transform: none;
   }
 }
+
+
+/* v52: priority mic quantity fields appear first in Layer 2 without adding a nested card. */
+.layer-two-priority-fields { display: contents; }

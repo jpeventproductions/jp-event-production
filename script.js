@@ -138,7 +138,7 @@ const eventQuestions = {
       label: "Uplighting needed?",
       name: "weddingUplighting",
       type: "select",
-      options: ["Yes", "No", "Maybe"]
+      options: ["No", "6 uplights", "12 uplights", "Recommend based on room"]
     },
     {
       label: "Venue has house sound?",
@@ -401,11 +401,18 @@ const djPlayTimeQuestion = {
   options: ["Not sure yet", "Up to 2 hours", "3 hours", "4 hours", "5 hours", "6 hours", "7+ hours"]
 };
 
+const wirelessMicQuestion = {
+  label: "How many wireless microphones are needed?",
+  name: "standaloneWirelessMicCount",
+  type: "select",
+  options: ["1 wireless mic", "2 wireless mics", "3-4 wireless mics", "5+ wireless mics", "Not sure yet"]
+};
+
 const lapelMicQuestion = {
   label: "How many lapel microphones are needed?",
   name: "lapelMicCount",
   type: "select",
-  options: ["None", "1 lapel mic", "2 lapel mics", "3-4 lapel mics", "5+ lapel mics", "Not sure yet"]
+  options: ["1 lapel mic", "2 lapel mics", "3-4 lapel mics", "5+ lapel mics", "Not sure yet"]
 };
 
 function shouldAskDjPlayHours(type) {
@@ -616,6 +623,30 @@ function enhanceChoiceSelect(field) {
   });
 }
 
+function renderLayerTwoMicQuestions() {
+  const priorityFields = document.getElementById("layerTwoMicQuestions");
+  if (!priorityFields) return;
+
+  const mode = selectedOnly("Wireless microphones")
+    ? "wireless"
+    : selectedOnly("Lapel microphones")
+      ? "lapel"
+      : "none";
+
+  if (priorityFields.dataset.mode === mode) return;
+
+  priorityFields.dataset.mode = mode;
+  priorityFields.innerHTML = "";
+
+  if (mode === "wireless") {
+    priorityFields.appendChild(makeField(wirelessMicQuestion));
+  }
+
+  if (mode === "lapel") {
+    priorityFields.appendChild(makeField(lapelMicQuestion));
+  }
+}
+
 function renderSpecificQuestions(type) {
   specificQuestions.innerHTML = "";
   let questions = eventQuestions[type] || [];
@@ -628,7 +659,7 @@ function renderSpecificQuestions(type) {
     }
   }
 
-  if (!includesQuestionNamed(questions, "lapelMicCount")) {
+  if (state.baseOptions.has("Lapel microphones") && !selectedOnly("Lapel microphones") && !includesQuestionNamed(questions, "lapelMicCount")) {
     const insertAt = type === "Wedding" ? 2 : Math.min(2, questions.length);
     questions = [...questions.slice(0, insertAt), lapelMicQuestion, ...questions.slice(insertAt)];
   }
@@ -758,7 +789,10 @@ const PRICING = {
   djBaseRate: 750,
   djIncludedHours: 4,
   djExtraHourlyAfterFour: 100,
+  djHourlyWithoutSetup: 125,
   djMinimumHours: 3,
+  uplightEach: 10,
+  mcSupportHourly: 75,
   backline: 250,
   liveBandCoverage: 250,
   lighting: 250,
@@ -828,6 +862,9 @@ function requestedWirelessMicCount(type) {
   ];
 
   let count = 0;
+  const standaloneField = document.querySelector('[name="standaloneWirelessMicCount"]');
+  if (standaloneField) count = Math.max(count, micCountFromValue(standaloneField.value));
+
   specificNames.forEach((name) => {
     const field = document.querySelector(`[name="${name}"]`);
     if (field) count = Math.max(count, micCountFromValue(field.value));
@@ -858,6 +895,36 @@ function quoteDisplayText(quote) {
   return `${money(quote.low)} - ${money(quote.high)}`;
 }
 
+function hasAnsweredDjPlayHours() {
+  const field = document.querySelector('[name="djPlayHours"]');
+  return Boolean(field && field.value && field.value !== "Not sure yet");
+}
+
+function selectedUplightCount() {
+  const fields = [
+    document.querySelector('[name="uplights"]'),
+    document.querySelector('[name="weddingUplighting"]')
+  ].filter(Boolean);
+
+  let count = 0;
+  fields.forEach((field) => {
+    count = Math.max(count, micCountFromValue(field.value));
+  });
+  return count;
+}
+
+function uplightRecommendationRequested() {
+  return [
+    document.querySelector('[name="uplights"]'),
+    document.querySelector('[name="weddingUplighting"]')
+  ].filter(Boolean).some((field) => /recommend/i.test(field.value));
+}
+
+function mcSupportRequested() {
+  const field = document.querySelector('[name="mcSupport"]');
+  return Boolean(field && field.value === "Yes");
+}
+
 function calculateTemporaryQuote() {
   const items = [];
   const type = eventTypeField.value;
@@ -871,6 +938,7 @@ function calculateTemporaryQuote() {
   const speakerSystemCount = requestedSpeakerSystemCount(type, venueSize, speakerSystems, indoorOutdoor);
   const requestedMics = requestedWirelessMicCount(type);
   const requestedLapelMics = requestedLapelMicCount();
+  const uplightCount = selectedUplightCount();
   const includedMics = includedWirelessMicCount(type);
   const additionalMics = Math.max(0, requestedMics - includedMics);
   const liveBandCoverageSelected = state.baseOptions.has("Live band coverage");
@@ -946,6 +1014,12 @@ function calculateTemporaryQuote() {
     }
   }
 
+  if (type !== "Wedding" && !state.baseOptions.has("DJ setup") && hasAnsweredDjPlayHours()) {
+    const hourlyDjTotal = djPlayHours * PRICING.djHourlyWithoutSetup;
+    subtotal += hourlyDjTotal;
+    items.push(`DJ service without the full DJ setup package: ${djPlayHours} hr x $125/hr = ${money(hourlyDjTotal)}`);
+  }
+
   if (includedMics > 0 && (state.baseOptions.has("Wireless microphones") || requestedMics > 0)) {
     items.push(`Wireless microphone support included (${includedMics} included)`);
   }
@@ -992,11 +1066,32 @@ function calculateTemporaryQuote() {
     }
   }
 
+  if (uplightCount > 0) {
+    const uplightTotal = uplightCount * PRICING.uplightEach;
+    subtotal += uplightTotal;
+    items.push(`Uplights: ${uplightCount} x $10 per light = ${money(uplightTotal)}`);
+  } else if (uplightRecommendationRequested()) {
+    items.push("Uplights: quantity and final price to be recommended after reviewing the room ($10 per light)");
+  }
+
+  if (mcSupportRequested()) {
+    if (state.baseOptions.has("DJ setup") || type === "Wedding") {
+      items.push("MC / announcement support included with DJ / wedding coverage");
+    } else {
+      const mcHours = Math.max(1, hours);
+      const mcTotal = mcHours * PRICING.mcSupportHourly;
+      subtotal += mcTotal;
+      items.push(`MC support: ${mcHours} hr x $75/hr = ${money(mcTotal)}`);
+    }
+  }
+
   if (state.baseOptions.has("Lighting")) {
     if (type === "Wedding") {
       items.push("Party lighting included in wedding minimum");
     } else if (state.baseOptions.has("DJ setup")) {
       items.push("Party lights included with DJ setup");
+    } else if (uplightCount > 0) {
+      items.push("Lighting selection priced through the uplight quantity above");
     } else {
       subtotal += PRICING.lighting;
       items.push("Event lighting / party lights: $250 flat");
@@ -1229,6 +1324,7 @@ function updateProgress() {
   updateQuotePreview();
 
   if (state.baseOptions.size > 0) {
+    renderLayerTwoMicQuestions();
     revealLayer(logisticsLayer);
   } else {
     hideLayer(logisticsLayer);
