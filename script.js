@@ -1,3 +1,4 @@
+
 const state = {
   baseOptions: new Set(),
   eventType: "",
@@ -1913,150 +1914,81 @@ updateProgress();
 
 // v54: Main headings grow while their supporting words fade with scroll position.
 (() => {
-   c onst reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-   co. st mobileTitleMotion = window.matchMedia("(max-width: 720px)");
-   con st titleGroups = Array.from(document.querySelectorAll([
-       ".h ero-content",
-        ". section-heading",
-         ".carousel-copy",
-       "  .founder-spotlight > div",
-       " . contact > div"
-       ].join(",")));
-  
-   i f (!titleGroups.length) return;
-  
-    titleGroups.forEach((group) => group.classList.add("scroll-title-group"));
-   do cument.documentElement.classList.add("motion-ready");
-     
-   let  titleMotionFrame = 0;
-  
-   fu nction clamp(value, minimum, maximum) {
-         return Math.min(maximum, Math.max(minimum, value));
-   }
-  
-    fu nction smoothStep(value) {
-          return value * value * (3 - (2 * value));
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const mobileTitleMotion = window.matchMedia("(max-width: 720px)");
+  const titleGroups = Array.from(document.querySelectorAll([
+    ".hero-content",
+    ".section-heading",
+    ".carousel-copy",
+    ".founder-spotlight > div",
+    ".contact > div"
+  ].join(",")));
+
+  if (!titleGroups.length) return;
+
+  titleGroups.forEach((group) => group.classList.add("scroll-title-group"));
+  document.documentElement.classList.add("motion-ready");
+
+  let titleMotionFrame = 0;
+
+  function clamp(value, minimum, maximum) {
+    return Math.min(maximum, Math.max(minimum, value));
+  }
+
+  function smoothStep(value) {
+    return value * value * (3 - (2 * value));
+  }
+
+  function updateTitleMotion() {
+    titleMotionFrame = 0;
+
+    if (reducedMotion.matches) {
+      titleGroups.forEach((group) => {
+        group.style.setProperty("--title-reveal", "1");
+        group.style.setProperty("--title-heading-opacity", "1");
+        group.style.setProperty("--title-heading-scale", "1");
+        group.style.setProperty("--title-heading-shift", "0px");
+        group.style.setProperty("--title-copy-opacity", "1");
+        group.style.setProperty("--title-copy-shift", "0px");
+      });
+      return;
     }
-  
-    functio n updateTitleMotion() {
-       titl  e MotionFrame = 0;
-      
-       if   (reduce dMotion.matches) {
-          titl     eGroups.forEach((group) => {
-                    group.style.setProperty("--title-reveal", "1");
-             gro.     p.style.set Property("--title-heading-opacity", "1");
-                   gr oup.style.setProperty("--title-heading-scale", "1");
-                 g   roup.style.setProperty("--title-heading-shift", "0px");
-             gr    oup.s   tyle.setProperty("--title-copy-opacity", "1");
-                  gr  oup.style.setProperty("--title-copy-shift", "0px");
-          });
-               re     turn;
-       }
-      
-       cons   t viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-       const    focusLine = viewportHeight * 0.48;
-        c  onst revealDistance = Math.max(viewportHeight * 0.72, 420);
-        c  onst headingTravel = mobileTitleMotion.matches ? 16 : 24;
-          const headingScaleStart = mobileTitleMotion.matches ? 0.93 : 0.89;
-      
-         t itleGroups.forEach((group) => {
-              co   nst rect = group.getBoundingClientRect();
-               c  onst groupCenter = rect.top + (rect.height * 0.5);
-               c  onst distance = Math.abs(groupCenter - focusLine);
-              c o  nst rawProgress = clamp(1 - (distance / revealDistance), 0, 1);
-               c o nst reveal = smoothStep(rawProgress);
-                 const headingOpacity = 0.48 + (reveal * 0.52);
-               c o nst headingScale = headingScaleStart + (reveal * (1 - headingScaleStart));
-             cons t headingShift = (1 - reveal) * headingTravel;
-               c  onst copyOpacity = 0.06 + (reveal * 0.94);
-               c  onst copyShift = (1 - reveal) * 18;
-           
-                gro up.style.setProperty("--title-reveal", reveal.toFixed(4));
-                g roup.style.setProperty("--title-heading-opacity", headingOpacity.toFixed(4));
-                 group.style.setProperty("--title-heading-scale", headingScale.toFixed(4));
-              g   roup.style.setProperty("--title-heading-shift", `${headingShift.toFixed(2)}px`);
-              gr   oup.style.setProperty("--title-copy-opacity", copyOpacity.toFixed(4));
-              g   roup.style.setProperty("--title-copy-shift"u n
 
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    const focusLine = viewportHeight * 0.48;
+    const revealDistance = Math.max(viewportHeight * 0.72, 420);
+    const headingTravel = mobileTitleMotion.matches ? 16 : 24;
+    const headingScaleStart = mobileTitleMotion.matches ? 0.93 : 0.89;
 
-                              // v54: Main headings grow while their supporting words fade with scroll position.
-                              (() => {
-                                 co nst reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-                                  const mobileTitleMotion = window.matchMedia("(max-width: 720px)");
-                                  const titleGroups = Array.from(document.querySelectorAll([
-                                      "  .hero-content",
-                                     "   .section-heading",
-                                      "  .carousel-copy",
-                                        ".founder-spotlight > div",
-                                      "  .contact.  div"
-                                     ] .join(",")));
-                                
-                                i f (!titleGroups.length) return;
-                                
-                                 titleGroups.forEach((group) => group.classList.add("scroll-title-group"));
-                                  document.documentElement.classList.add("motion-ready");
-                                
-                                let  titleMotionFrame = 0;
-                                
-                                f. nction clamp(value, minimum, maximum) {
-                                     re turn Math.min(maximum, Math.max(minimum, value));
-                                } 
-                                
-                                 function smoothStep(value) {
-                                      re turn value * value * (3 - (2.  value));
-                                 }
-                                
-                                fu nction. pdateTitleMotion() {
-                                    t  itleMotionFrame = 0;
-                                  
-                                    if   (reducedMotion.matches) {
-                                         t   itleGroups.forEach((group). > {
-                                                   group.style.setProperty("--title-reveal", "1");
-                                             g roup.style.setProperty("--title-heading-opacity", "1");
-                                              group.style.setProperty("--title-heading-scale", "1");
-                                             group.style.setProperty("--title-heading-shift", "0px");
-                                            gr  oup.style.setProperty("--title-copy-opacity", "1");
-                                             gro up.style.setProperty("--title-copy-shift", "0px");
-                                    }  );
-                                       re turn;
-                                }
-                                  
-                                  c  onst viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-                                 c o nst focusLine = viewportHeight * 0.48;
-                                 con. t revealDistance = Math.max(viewportHeight.  0.72, 420);
-                                 c   onst headingTravel = mobileTitleMotion.matches ? 16 : 24;
-                                  c  onst headingScaleStart = mobileTitleMotion.matches ? 0.93 : 0.89;
-                                
-                                ti  tleGroups.forEach((group) => {
-                                       co nst rect = group.getBoundingClientRect();
-                                      c  onst groupCenter =. ect.top + (rect.height * 0.5);
-                                       co nst distance = Math.abs(groupCenter - focusLine);
-                                     c   onst rawProgress = clamp(1 - (distance / revealDistance), 0, 1);
-                                       co nst reveal = smoothStep(rawProgress);
-                                      c o nst headingOpacity = 0.48 + (reveal * 0.52);
-                                      c  onst headingScale = headingScaleStart + (reveal * (1 - headingScaleStart));
-                                      c  onst headingShift = (1 - reveal) * headingTravel;
-                                       c onst copyOpacity = 0.06 + (reveal * 0.94);
-                                        const copyShift = (1 - reveal) * 18;
-                                  
-                                      g r oup.style.setProperty("--title-reveal", reveal.toFixed(4));
-                                      g r oup.style.setProperty("--title-heading-opacity", headingOpacity.toFixed(4));
-                                       g roup.style.setProperty("--title-heading-scale", headingScale.toFixed(4));
-                                       gr oup.style.setProperty("--title-heading-shift", `${headingShift.toFixed(2)}px`);
-                                   g rou  p.style.setProperty("--title-copy-opacity", copyOpacity.toFixed(4));
-                                     g  roup.style.setProperty("--title-copy-shift", `${copyShift.toFixed(2)}px`);
-                                });
-                              } 
-                               
-                                func tion requestTitleMotionUpdate() {
-                                 i   f (titleMotionFrame) return;
-                                   t itleMotionFrame = requestAnimationFrame(updateTitleMotion);
-                              }
-            
-            w indow.addEventListener("scroll", requestTitleMotionUpdate, { passive: true });
-            wi ndow.addEventListener("resize", requestTitleMotionUpdate, { passive: true });
-             reducedMotion.addEventListener?.("change", requestTitleMotionUpdate);
-            mobileTitleMotion.addEventListener?.("change", requestTitleMotionUpdate);
-            upd ateTitleMotion();
-         })();
-      r* s=u*u>
+    titleGroups.forEach((group) => {
+      const rect = group.getBoundingClientRect();
+      const groupCenter = rect.top + (rect.height * 0.5);
+      const distance = Math.abs(groupCenter - focusLine);
+      const rawProgress = clamp(1 - (distance / revealDistance), 0, 1);
+      const reveal = smoothStep(rawProgress);
+      const headingOpacity = 0.48 + (reveal * 0.52);
+      const headingScale = headingScaleStart + (reveal * (1 - headingScaleStart));
+      const headingShift = (1 - reveal) * headingTravel;
+      const copyOpacity = 0.06 + (reveal * 0.94);
+      const copyShift = (1 - reveal) * 18;
+
+      group.style.setProperty("--title-reveal", reveal.toFixed(4));
+      group.style.setProperty("--title-heading-opacity", headingOpacity.toFixed(4));
+      group.style.setProperty("--title-heading-scale", headingScale.toFixed(4));
+      group.style.setProperty("--title-heading-shift", `${headingShift.toFixed(2)}px`);
+      group.style.setProperty("--title-copy-opacity", copyOpacity.toFixed(4));
+      group.style.setProperty("--title-copy-shift", `${copyShift.toFixed(2)}px`);
+    });
+  }
+
+  function requestTitleMotionUpdate() {
+    if (titleMotionFrame) return;
+    titleMotionFrame = requestAnimationFrame(updateTitleMotion);
+  }
+
+  window.addEventListener("scroll", requestTitleMotionUpdate, { passive: true });
+  window.addEventListener("resize", requestTitleMotionUpdate, { passive: true });
+  reducedMotion.addEventListener?.("change", requestTitleMotionUpdate);
+  mobileTitleMotion.addEventListener?.("change", requestTitleMotionUpdate);
+  updateTitleMotion();
+})();
