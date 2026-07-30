@@ -1909,3 +1909,71 @@ updateProgress();
   reducedMotion.addEventListener?.("change", requestMobileParallaxUpdate);
   requestMobileParallaxUpdate();
 })();
+
+
+// v54: Main headings grow while their supporting words fade with scroll position.
+(() => {
+   c onst reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+   co. st mobileTitleMotion = window.matchMedia("(max-width: 720px)");
+   con st titleGroups = Array.from(document.querySelectorAll([
+       ".h ero-content",
+        ". section-heading",
+         ".carousel-copy",
+       "  .founder-spotlight > div",
+       " . contact > div"
+       ].join(",")));
+  
+   i f (!titleGroups.length) return;
+  
+    titleGroups.forEach((group) => group.classList.add("scroll-title-group"));
+   do cument.documentElement.classList.add("motion-ready");
+     
+   let  titleMotionFrame = 0;
+  
+   fu nction clamp(value, minimum, maximum) {
+         return Math.min(maximum, Math.max(minimum, value));
+   }
+  
+    fu nction smoothStep(value) {
+          return value * value * (3 - (2 * value));
+    }
+  
+    functio n updateTitleMotion() {
+       titl  e MotionFrame = 0;
+      
+       if   (reduce dMotion.matches) {
+          titl     eGroups.forEach((group) => {
+                    group.style.setProperty("--title-reveal", "1");
+             gro.     p.style.set Property("--title-heading-opacity", "1");
+                   gr oup.style.setProperty("--title-heading-scale", "1");
+                 g   roup.style.setProperty("--title-heading-shift", "0px");
+             gr    oup.s   tyle.setProperty("--title-copy-opacity", "1");
+                  gr  oup.style.setProperty("--title-copy-shift", "0px");
+          });
+               re     turn;
+       }
+      
+       cons   t viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+       const    focusLine = viewportHeight * 0.48;
+        c  onst revealDistance = Math.max(viewportHeight * 0.72, 420);
+        c  onst headingTravel = mobileTitleMotion.matches ? 16 : 24;
+          const headingScaleStart = mobileTitleMotion.matches ? 0.93 : 0.89;
+      
+         t itleGroups.forEach((group) => {
+              co   nst rect = group.getBoundingClientRect();
+               c  onst groupCenter = rect.top + (rect.height * 0.5);
+               c  onst distance = Math.abs(groupCenter - focusLine);
+              c o  nst rawProgress = clamp(1 - (distance / revealDistance), 0, 1);
+               c o nst reveal = smoothStep(rawProgress);
+                 const headingOpacity = 0.48 + (reveal * 0.52);
+               c o nst headingScale = headingScaleStart + (reveal * (1 - headingScaleStart));
+             cons t headingShift = (1 - reveal) * headingTravel;
+               c  onst copyOpacity = 0.06 + (reveal * 0.94);
+               c  onst copyShift = (1 - reveal) * 18;
+           
+                gro up.style.setProperty("--title-reveal", reveal.toFixed(4));
+                g roup.style.setProperty("--title-heading-opacity", headingOpacity.toFixed(4));
+                 group.style.setProperty("--title-heading-scale", headingScale.toFixed(4));
+              g   roup.style.setProperty("--title-heading-shift", `${headingShift.toFixed(2)}px`);
+              gr   oup.style.setProperty("--title-copy-opacity", copyOpacity.toFixed(4));
+              g   roup.style.setProperty("--title-copy-shift"u n
