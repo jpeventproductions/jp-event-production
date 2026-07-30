@@ -1,3 +1,56 @@
+
+
+/* v54: scroll-led headline growth with supporting copy fading in and out. */
+.motion-ready .scroll-title-group {
+   - -title-reveal: 1;
+}
+
+.motion-ready .scroll-title-group > h1,
+.motion-ready .scroll-title-group > h2,
+.motion-ready .scroll-title-group > h3,
+.motion-ready .scroll-title-group .builder-title-row > h2 {
+   opac ity: var(--title-heading-opacity, 1);
+   t ransform:
+    tr  anslate3d(0, var(--title-heading-shift, 0), 0)
+      scale(var(--title-heading-scale, 1));
+   tr ansform-origin: center left;
+   tr ansition: opacity 90ms linear, transform 90ms linear;
+   wi ll-change: opacity, transform;
+}
+
+.motion-ready .section-heading.scroll-title-group > h2,
+.motion-ready .section-heading.scroll-title-group .builder-title-row > h2 {
+   t ransform-origin: center;
+}
+
+.motion-ready .scroll-title-group > p:not(.eyebrow),
+.motion-ready .scroll-title-group > .eyebrow {
+    opacity: var(--title-copy-opacity, 1);
+    transform: translate3d(0, var(--title-copy-shift, 0), 0);
+   t ransition: opacity 110ms linear, transform 110ms linear;
+    will-change: opacity, transform;
+}
+
+.motion-ready .scroll-title-group > .eyebrow {
+   tr ansition-delay: 15ms;
+}
+
+.motion-ready .scroll-title-group > p:not(.eyebrow) {
+   tr ansition-delay: 40ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+   . motion-ready .scroll-title-group > h1,
+   .m otion-ready .scroll-title-group > h2,
+   . motion-ready .scroll-title-group > h3,
+   .mo tion-ready .scroll-title-group .builder-title-row > h2,
+   . motion-ready .scroll-title-group > p,
+   . motion-ready .scroll-title-group > .eyebrow {
+       o  pacity: 1 !important;
+         transform: none !important;
+         transition: none !important;
+   }
+}
 :root {
   --header-offset: 88px;
   --ink: #111111;
